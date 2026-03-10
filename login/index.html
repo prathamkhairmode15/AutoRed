@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoRed | Secure Access Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Apply theme early
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div class="theme-toggle">
+        <button id="theme-toggle-btn" class="theme-toggle-btn">THEME: DARK</button>
+    </div>
+
+    <main class="login-page">
+        <div class="login-card">
+            <div class="card-header">
+                <h1 class="card-title flicker">AUTORED&nbsp;<span>APT</span></h1>
+                <div class="card-divider"></div>
+                <p class="card-subtitle">Secure Access Portal</p>
+            </div>
+
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="userId" class="form-label">Operator ID</label>
+                    <input id="userId" type="text" class="form-input" placeholder="Enter your user ID" required
+                        autocomplete="username">
+                </div>
+
+                <div id="otp-group" class="form-group" style="display: none;">
+                    <label for="otp" class="form-label">Access Token (OTP)</label>
+                    <input id="otp" type="text" class="form-input" placeholder="Enter 6-digit code" maxLength="6"
+                        autocomplete="one-time-code">
+                </div>
+
+                <div id="form-status" class="form-status"></div>
+
+                <button type="submit" id="submit-btn" class="btn-submit">
+                    GET ACCESS KEY
+                </button>
+
+                <div id="resend-row" class="resend-container" style="display: none;">
+                    Didn't get the key?
+                    <button type="button" id="resend-btn" class="btn-resend">Resend</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const userIdInput = document.getElementById('userId');
+        const otpGroup = document.getElementById('otp-group');
+        const otpInput = document.getElementById('otp');
+        const statusMsg = document.getElementById('form-status');
+        const submitBtn = document.getElementById('submit-btn');
+        const resendRow = document.getElementById('resend-row');
+        const resendBtn = document.getElementById('resend-btn');
+        const themeBtn = document.getElementById('theme-toggle-btn');
+
+        let otpRequested = false;
+
+        // Theme Toggle Logic
+        function updateThemeText(theme) {
+            themeBtn.textContent = `THEME: ${theme.toUpperCase()}`;
+        }
+
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeText(newTheme);
+        });
+
+        // Initialize theme text
+        updateThemeText(document.documentElement.getAttribute('data-theme'));
+
+        // Form Logic
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!otpRequested) {
+                handleGetOtp();
+            } else {
+                handleLogin();
+            }
+        });
+
+        function handleGetOtp() {
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                showStatus('// USER ID REQUIRED', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showStatus('// LOOKING UP ACCOUNT...', '');
+
+            // Simulate API call
+            setTimeout(() => {
+                setLoading(false);
+                otpRequested = true;
+                otpGroup.style.display = 'block';
+                resendRow.style.display = 'block';
+                submitBtn.textContent = 'VALIDATE ACCESS';
+                userIdInput.disabled = true;
+                showStatus('// OTP SENT TO EMAIL', 'success');
+                otpInput.focus();
+            }, 1500);
+        }
+
+        function handleLogin() {
+            const otp = otpInput.value.trim();
+            if (!otp) {
+                showStatus('// OTP REQUIRED', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showStatus('// VERIFYING...', '');
+
+            // Simulate verification
+            setTimeout(() => {
+                setLoading(false);
+                if (otp === '123456') { // Mock validation
+                    showStatus('// ACCESS GRANTED. REDIRECTING...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '../dashboard/index.html';
+                    }, 1000);
+                } else {
+                    showStatus('// INVALID OR EXPIRED OTP', 'error');
+                }
+            }, 1500);
+        }
+
+        resendBtn.addEventListener('click', handleGetOtp);
+
+        function showStatus(msg, type) {
+            statusMsg.textContent = msg;
+            statusMsg.className = 'form-status ' + type;
+        }
+
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            submitBtn.textContent = loading ? 'PROCESSING...' : (otpRequested ? 'VALIDATE ACCESS' : 'GET ACCESS KEY');
+        }
+    </script>
+</body>
+
+</html>
