@@ -2,161 +2,275 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoRed APT | Autonomous Penetration Testing Platform</title>
-  <link rel="stylesheet" href="style.css">
-  <script>
-    // Apply theme early to prevent flicker
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoRed APT | Autonomous Penetration Testing Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Apply theme early to prevent flicker
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav id="navbar">
-    <div class="logo">AutoRed APT</div>
-    <div class="nav-right">
-      <button id="theme-toggle" class="theme-toggle-btn">THEME: DARK</button>
-      <a href="../login/index.html" class="btn-login">LOGIN</a>
-    </div>
-  </nav>
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="logo">AutoRed <span>APT</span></div>
+        <div class="nav-right">
+            <button id="theme-toggle" class="theme-toggle-btn">THEME: DARK</button>
+            <a href="../login/index.html" class="btn-login">LOGIN</a>
+        </div>
+    </nav>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <h2>Autonomous Penetration Testing Platform</h2>
-      <h1>AutoRed APT</h1>
-      <p>AutoRed integrates multiple penetration testing tools into a unified platform that automates
-        vulnerability detection and security assessment for complex infrastructure.</p>
-    </div>
-  </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Autonomous Penetration Testing Platform</h2>
+            <h1>AutoRed <span>APT</span></h1>
+            <p>AutoRed <span>APT</span> is a unified penetration testing platform designed to automate security
+                assessments across network and web environments. The platform integrates multiple security tools into a
+                single workflow, enabling faster vulnerability detection, reduced false positives, and improved security
+                analysis.</p>
+            <p class="hero-supporting">Designed to simplify complex penetration testing workflows while maintaining
+                professional security standards.</p>
+            <div class="hero-highlights">
+                <span class="highlight-badge">Unified Security Testing Platform</span>
+                <span class="highlight-badge">Automated Vulnerability Detection</span>
+                <span class="highlight-badge">Integrated Toolchain Architecture</span>
+                <span class="highlight-badge">Research-Oriented Security Framework</span>
+            </div>
+        </div>
+    </section>
 
-  <!-- Problem Section -->
-  <section class="problem" id="problem">
-    <div class="container">
-      <h2 class="section-title">Challenges in Traditional<br>Penetration Testing</h2>
-      <div class="problem-grid">
-        <div class="problem-card">
-          <p>Fragmented security tools</p>
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <div class="container">
+            <h2 class="section-title">Challenges in Traditional<br>Penetration Testing</h2>
+            <p class="section-intro">Modern penetration testing often requires the use of multiple tools and manual
+                configurations. This fragmented approach increases complexity and slows down security assessments.</p>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <p>Fragmented Toolchains</p>
+                    <span>Security professionals must switch between multiple tools such as Nmap, SQLmap, and
+                        Metasploit, making workflows inefficient.</span>
+                </div>
+                <div class="problem-card">
+                    <p>Manual Configuration</p>
+                    <span>Many testing tools require extensive manual setup, which increases testing time and technical
+                        complexity.</span>
+                </div>
+                <div class="problem-card">
+                    <p>High False Positives</p>
+                    <span>Some vulnerability scanners produce inaccurate results that require additional manual
+                        verification.</span>
+                </div>
+                <div class="problem-card">
+                    <p>Limited Automation</p>
+                    <span>Traditional penetration testing approaches often lack automation and integrated
+                        analysis.</span>
+                </div>
+            </div>
         </div>
-        <div class="problem-card">
-          <p>Manual configuration and setup</p>
-        </div>
-        <div class="problem-card">
-          <p>High false positive results</p>
-        </div>
-        <div class="problem-card">
-          <p>Time-consuming vulnerability analysis</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Solution Section -->
-  <section class="solution" id="solution">
-    <div class="container">
-      <h2 class="section-title">The AutoRed Approach</h2>
-      <div class="solution-grid">
-        <div class="solution-card">
-          <h3>Unified Scanning</h3>
-          <p>Orchestrate diverse scanning engines under a single command interface for maximum coverage.</p>
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+        <div class="container">
+            <h2 class="section-title">The AutoRed Approach</h2>
+            <p class="section-intro">AutoRed <span>APT</span> addresses these challenges by providing a unified and
+                automated penetration testing environment. The platform integrates multiple security testing tools into
+                a single interface and automates the scanning and analysis process.</p>
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <h3>Unified Platform</h3>
+                    <p>AutoRed combines multiple penetration testing tools into one integrated platform.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>Automated Security Workflows</h3>
+                    <p>The platform automates vulnerability scanning and testing processes to reduce manual
+                        intervention.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>Integrated Analysis Engine</h3>
+                    <p>Scan results from multiple tools are processed and organized to provide meaningful insights.</p>
+                </div>
+            </div>
         </div>
-        <div class="solution-card">
-          <h3>Automated Testing Workflow</h3>
-          <p>Define and execute sophisticated attack chains without manual intervention between steps.</p>
-        </div>
-        <div class="solution-card">
-          <h3>AI-Assisted Vulnerability Prioritization</h3>
-          <p>Leverage intelligent scoring to focus on high-impact vulnerabilities that matter most.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- System Architecture Section -->
-  <section class="architecture" id="architecture">
-    <div class="container">
-      <h2 class="section-title">System Architecture</h2>
-      <div class="architecture-flow">
-        <div class="arch-block">
-          <h3>UI Layer</h3>
+    <!-- Core Capabilities Section -->
+    <section class="capabilities" id="capabilities">
+        <div class="container">
+            <h2 class="section-title">Core Capabilities</h2>
+            <p class="section-intro">AutoRed <span>APT</span> provides several key capabilities designed to streamline
+                penetration testing and vulnerability analysis.</p>
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <h3>Automated Reconnaissance</h3>
+                    <p>Performs network discovery and service identification using integrated scanning techniques.</p>
+                </div>
+                <div class="capability-card">
+                    <h3>Vulnerability Detection</h3>
+                    <p>Identifies potential vulnerabilities in network infrastructure and web applications.</p>
+                </div>
+                <div class="capability-card">
+                    <h3>Integrated Exploitation Testing</h3>
+                    <p>Supports controlled exploitation testing to evaluate real-world attack scenarios.</p>
+                </div>
+            </div>
         </div>
-        <div class="arch-block">
-          <h3>Core Processing Layer</h3>
+    </section>
+
+    <!-- System Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <h2 class="section-title">System Architecture</h2>
+            <p class="section-intro">The AutoRed platform follows a layered architecture to ensure scalability,
+                modularity, and efficient data processing. This architecture enables AutoRed to manage complex
+                penetration testing workflows efficiently.</p>
+            <div class="architecture-flow">
+                <div class="arch-block">
+                    <h3>User Interface Layer</h3>
+                    <p>Provides a clean dashboard interface where users configure scans, view results, and manage
+                        reports.</p>
+                </div>
+                <div class="arch-block">
+                    <h3>Core Processing Layer</h3>
+                    <p>Handles scanning operations and integrates multiple penetration testing tools into the testing
+                        workflow.</p>
+                </div>
+                <div class="arch-block">
+                    <h3>Data Management Layer</h3>
+                    <p>Stores scan results, configurations, and historical data for analysis and reporting.</p>
+                </div>
+            </div>
         </div>
-        <div class="arch-block">
-          <h3>Data Management Layer</h3>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow" id="workflow">
+        <div class="container">
+            <h2 class="section-title">How AutoRed Works</h2>
+            <p class="section-intro">The AutoRed testing process follows a structured workflow that simplifies
+                penetration testing operations.</p>
+            <div class="workflow-grid">
+                <div class="step-card">
+                    <span class="step-num">1</span>
+                    <h3>Target Configuration</h3>
+                    <p>Users provide the target IP address, domain name, or web application URL.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">2</span>
+                    <h3>Scan Execution</h3>
+                    <p>AutoRed launches automated scanning processes using integrated security tools.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">3</span>
+                    <h3>Real-Time Analysis</h3>
+                    <p>Scan results are processed and vulnerabilities are identified.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">4</span>
+                    <h3>Report Generation</h3>
+                    <p>The platform generates structured reports that summarize vulnerabilities and security risks.</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Workflow Section -->
-  <section class="workflow" id="workflow">
-    <div class="container">
-      <h2 class="section-title">How AutoRed Works</h2>
-      <div class="workflow-grid">
-        <div class="step-card">
-          <span class="step-num">1</span>
-          <h3>Target Configuration</h3>
+    <!-- Platform Benefits Section -->
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <h2 class="section-title">Why Choose AutoRed</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>Simplified Security Testing</h3>
+                    <p>Reduces the complexity of using multiple penetration testing tools.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>Improved Efficiency</h3>
+                    <p>Automates repetitive testing tasks and speeds up vulnerability discovery.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>Integrated Security Framework</h3>
+                    <p>Combines multiple security tools into one coordinated workflow.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>Research-Oriented Platform</h3>
+                    <p>Designed to support academic research and practical cybersecurity experimentation.</p>
+                </div>
+            </div>
         </div>
-        <div class="step-card">
-          <span class="step-num">2</span>
-          <h3>Scan Execution</h3>
+    </section>
+
+    <!-- Target Users Section -->
+    <section class="users" id="users">
+        <div class="container">
+            <h2 class="section-title">Who Can Use AutoRed</h2>
+            <p class="section-intro">AutoRed <span>APT</span> is designed for individuals and organizations involved in
+                cybersecurity research and security testing.</p>
+            <div class="users-container">
+                <div class="user-tag">Cybersecurity Researchers</div>
+                <div class="user-tag">Ethical Hackers & Security Analysts</div>
+                <div class="user-tag">Academic Institutions & Students</div>
+                <div class="user-tag">Small Security Teams</div>
+            </div>
         </div>
-        <div class="step-card">
-          <span class="step-num">3</span>
-          <h3>Real-Time Analysis</h3>
+    </section>
+
+    <!-- Ethical Use Section -->
+    <section class="ethics" id="ethics">
+        <div class="container">
+            <h2 class="section-title">Responsible Security Testing</h2>
+            <div class="ethical-box">
+                <p>AutoRed <span>APT</span> is designed for ethical security testing and cybersecurity research. The
+                    platform should only be used on systems where proper authorization has been obtained.</p>
+                <p class="ethical-supporting">Responsible disclosure and ethical hacking principles are essential for
+                    maintaining a secure digital environment.</p>
+            </div>
         </div>
-        <div class="step-card">
-          <span class="step-num">4</span>
-          <h3>Report Generation</h3>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 AutoRed <span>APT</span></p>
+                <p>Ethical Security Testing Platform</p>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </footer>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <p>&copy; 2026 AutoRed APT</p>
-        <p>Ethical Security Testing Platform</p>
-      </div>
-    </div>
-  </footer>
+    <!-- Script for Navbar transitions and Theme Toggle -->
+    <script>
+        const nav = document.getElementById('navbar');
+        window.onscroll = function () {
+            if (window.pageYOffset > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        };
 
-  <!-- Script for Navbar transitions and Theme Toggle -->
-  <script>
-    const nav = document.getElementById('navbar');
-    window.onscroll = function () {
-      if (window.pageYOffset > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
-    };
+        const themeToggle = document.getElementById('theme-toggle');
 
-    const themeToggle = document.getElementById('theme-toggle');
+        function updateToggleText(theme) {
+            themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
+        }
 
-    function updateToggleText(theme) {
-      themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
-    }
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateToggleText(newTheme);
+        });
 
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateToggleText(newTheme);
-    });
-
-    // Initialize text
-    updateToggleText(document.documentElement.getAttribute('data-theme'));
-  </script>
+        // Initialize text
+        updateToggleText(document.documentElement.getAttribute('data-theme'));
+    </script>
 </body>
 
 </html>

@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=IBM+Plex+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&family=IBM+Plex+Mono:wght@400;700&display=swap');
 
 :root {
     --bg-color: #0a0a0a;
-    --accent-color: #f58282;
+    --accent-color: #ff0404;
     /* Match landing page red */
     --accent-glow: rgba(255, 26, 26, 0.4);
     --accent-glow-soft: rgba(255, 26, 26, 0.15);
@@ -48,14 +48,19 @@ h1,
 h2,
 h3,
 .pixel-font {
-    font-family: 'Press Start 2P', cursive;
-    text-transform: uppercase;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    text-transform: none;
     color: var(--text-primary);
 }
 
+.nav-logo span {
+    color: var(--accent-color);
+}
+
 .sub-pixel-font {
-    font-family: 'VT323', monospace;
-    font-size: 1.2rem;
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
 }
 
 /* Layout Structure */
@@ -125,8 +130,9 @@ h3,
     padding: 1rem 2rem;
     color: var(--text-secondary);
     text-decoration: none;
-    font-family: 'VT323', monospace;
-    font-size: 1.4rem;
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
     border-left: 3px solid transparent;
     transition: all 0.3s ease;
 }
@@ -167,8 +173,9 @@ h3,
 }
 
 .stat-value {
-    font-size: 2.5rem;
-    font-family: 'VT323', monospace;
+    font-size: 2.2rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
     color: var(--text-primary);
 }
 
@@ -182,8 +189,9 @@ h3,
     color: var(--text-primary);
     border: 1px solid var(--accent-color);
     padding: 1rem 2rem;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.8rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
     border-radius: var(--border-radius);
     transition: all 0.3s ease;
@@ -272,11 +280,12 @@ tr:hover td {
     background: none;
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 5px 10px;
+    padding: 5px 15px;
     border-radius: 4px;
     cursor: pointer;
-    font-family: 'VT323', monospace;
-    font-size: 1rem;
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .theme-toggle:hover {

@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&family=IBM+Plex+Mono:wght@400;700&display=swap');
 
 :root {
     --bg-color: #0a0a0a;
-    --accent: #f58282;
+    --accent: #ff0404;
     --text-main: #ffffff;
     --text-dim: #cfcfcf;
     --card-bg: #111111;
     --border-color: #222222;
-    --scanline-color: rgba(255, 255, 255, 0.05);
-    --flicker-anim: flicker 0.15s infinite;
+    --scanline-color: transparent;
+    --flicker-anim: none;
 }
 
 [data-theme="light"] {
@@ -40,29 +40,10 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Background Effects */
-.scanlines {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(var(--scanline-color) 50%,
-            transparent 50%);
-    background-size: 100% 4px;
-    z-index: 10;
-    pointer-events: none;
-}
-
+/* Background Effects - Removed for professionalism */
+.scanlines,
 .vignette {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.8) 120%);
-    z-index: 5;
-    pointer-events: none;
+    display: none;
 }
 
 /* Login Card */
@@ -84,18 +65,24 @@ body {
 }
 
 .card-title {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.card-title span {
     color: var(--accent);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
 }
 
 .card-subtitle {
-    font-size: 0.8rem;
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
     color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 3px;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .card-divider {
@@ -113,11 +100,12 @@ body {
 
 .form-label {
     display: block;
-    font-size: 0.7rem;
-    text-transform: uppercase;
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    text-transform: none;
     margin-bottom: 0.5rem;
     color: var(--accent);
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .form-input {
@@ -148,8 +136,9 @@ body {
     border: 1px solid var(--accent);
     color: var(--accent);
     padding: 1rem;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.8rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 1rem;
@@ -219,8 +208,9 @@ body {
     color: var(--text-dim);
     padding: 5px 15px;
     cursor: pointer;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.6rem;
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 0.8rem;
     border-radius: 4px;
 }
 
