@@ -1,37 +1,19 @@
-/* ── AutoRed Design System ── */
+/* ── AutoRed Professional Design System ── */
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&family=Outfit:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap');
 
 :root {
-  /* Dark Theme (Default) */
-  --bg-color: #000000;
+  --bg-color: #0a0a0a;
+  --accent: #ff1a1a;
   --text-main: #ffffff;
-  --text-dim: #888888;
-  --accent: #e8000e;
-  --accent-glow: rgba(232, 0, 14, 0.4);
-  --card-bg: rgba(20, 20, 20, 0.8);
-  --card-border: rgba(232, 0, 14, 0.3);
-  --grid-color: rgba(255, 255, 255, 0.05);
-  --nav-bg: rgba(0, 0, 0, 0.8);
-  
-  /* Fonts */
-  --font-mono: 'Share Tech Mono', monospace;
+  --text-secondary: #cfcfcf;
+  --nav-bg-transparent: rgba(10, 10, 10, 0);
+  --nav-bg-solid: #000000;
+
   --font-pixel: 'Press Start 2P', cursive;
-  --font-sans: 'Outfit', sans-serif;
+  --font-sans: 'Inter', sans-serif;
 
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme='light'] {
-  --bg-color: #f5f5f5;
-  --text-main: #1a1a1a;
-  --text-dim: #666666;
-  --accent: #e8000e;
-  --accent-glow: rgba(232, 0, 14, 0.2);
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --card-border: rgba(0, 0, 0, 0.1);
-  --grid-color: rgba(0, 0, 0, 0.05);
-  --nav-bg: rgba(255, 255, 255, 0.8);
+  --transition: 0.3s ease;
 }
 
 * {
@@ -40,35 +22,35 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
   font-family: var(--font-sans);
-  transition: background-color var(--transition), color var(--transition);
-  overflow-x: hidden;
   line-height: 1.6;
-}
-
-/* ── Background Elements ── */
-.grid-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image: 
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
+  overflow-x: hidden;
 }
 
 /* ── Typography ── */
-h1, h2, h3 {
+h1,
+h2,
+h3,
+.logo {
   font-family: var(--font-pixel);
   text-transform: uppercase;
+  color: var(--text-main);
 }
 
-.mono {
-  font-family: var(--font-mono);
+p,
+span,
+li,
+a,
+button {
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
 }
 
 /* ── Navbar ── */
@@ -76,60 +58,57 @@ nav {
   position: fixed;
   top: 0;
   width: 100%;
-  padding: 20px 50px;
+  padding: 20px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--nav-bg);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  border-bottom: 1px solid var(--card-border);
+  z-index: 1000;
+  background-color: var(--nav-bg-transparent);
+  transition: background-color var(--transition), padding var(--transition);
+}
+
+nav.scrolled {
+  background-color: var(--nav-bg-solid);
+  padding: 15px 40px;
+  border-bottom: 1px solid rgba(255, 26, 26, 0.2);
 }
 
 .logo {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.logo span {
-  color: var(--accent);
-}
-
-.nav-links {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: var(--text-main);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   letter-spacing: 1px;
-  transition: color var(--transition);
 }
 
-.nav-links a:hover {
-  color: var(--accent);
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 
-/* ── Theme Toggle ── */
-.theme-toggle {
-  background: none;
+.btn-login {
+  padding: 8px 24px;
+  background: transparent;
   border: 1px solid var(--accent);
   color: var(--text-main);
-  padding: 8px 15px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  border-radius: 4px;
-  transition: background var(--transition), color var(--transition);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition);
 }
 
-.theme-toggle:hover {
-  background: var(--accent);
+.btn-login:hover {
+  background-color: var(--accent);
   color: white;
+}
+
+/* ── Container ── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+section {
+  padding: 100px 0;
 }
 
 /* ── Hero Section ── */
@@ -140,114 +119,171 @@ nav {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0 20px;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 8vw, 4.5rem);
-  margin-bottom: 20px;
-  letter-spacing: -2px;
-  animation: flicker 4s infinite;
+  font-size: clamp(2rem, 6vw, 4rem);
+  margin-bottom: 15px;
+  color: var(--text-main);
+}
+
+.hero h2 {
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 25px;
+  letter-spacing: 2px;
 }
 
 .hero p {
-  font-size: 1.2rem;
-  color: var(--text-dim);
-  max-width: 600px;
+  max-width: 700px;
+  font-size: 1.1rem;
   margin-bottom: 40px;
-  opacity: 0;
-  animation: fadeIn 1s forwards 0.5s;
 }
 
-.btn-primary {
-  padding: 15px 40px;
-  background: transparent;
-  border: 2px solid var(--accent);
+/* ── Problem Section ── */
+.section-title {
+  text-align: center;
+  margin-bottom: 60px;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.problem-card {
+  padding: 30px;
+  background: #111;
+  border-left: 3px solid var(--accent);
+}
+
+.problem-card p {
+  font-weight: 500;
   color: var(--text-main);
-  font-family: var(--font-pixel);
-  font-size: 0.9rem;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: color 0.4s;
 }
 
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: var(--accent);
-  transition: transform 0.4s;
-  z-index: -1;
-}
-
-.btn-primary:hover::before {
-  transform: translateX(100%);
-}
-
-.btn-primary:hover {
-  color: white;
-}
-
-/* ── Features Section ── */
-.features {
-  padding: 100px 50px;
+/* ── Solution Section ── */
+.solution-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+.solution-card {
   padding: 40px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s;
+  background: #111;
+  border: 1px solid rgba(255, 26, 26, 0.1);
+  transition: all var(--transition);
 }
 
-.card:hover {
-  transform: translateY(-10px);
+.solution-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px);
 }
 
-.card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+.solution-card h3 {
+  font-size: 0.9rem;
+  margin-bottom: 20px;
   color: var(--accent);
 }
 
-.card p {
-  color: var(--text-dim);
-  font-size: 0.95rem;
+/* ── Architecture Section ── */
+.architecture-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.arch-block {
+  width: 100%;
+  padding: 25px;
+  background: #111;
+  border: 1px solid #333;
+  text-align: center;
+  position: relative;
+}
+
+.arch-block::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: 40px;
+  background: var(--accent);
+}
+
+.arch-block:last-child::after {
+  display: none;
+}
+
+.arch-block h3 {
+  font-size: 0.8rem;
+}
+
+/* ── Workflow Section ── */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.step-card {
+  text-align: center;
+  padding: 30px;
+  background: #111;
+  position: relative;
+}
+
+.step-num {
+  font-family: var(--font-pixel);
+  color: var(--accent);
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* ── Footer ── */
+footer {
+  padding: 60px 0;
+  background: #000;
+  border-top: 1px solid rgba(255, 26, 26, 0.2);
+  text-align: center;
+}
+
+.footer-content p {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
 }
 
 /* ── Animations ── */
-@keyframes flicker {
-  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
-    opacity: 1;
-    text-shadow: 0 0 10px var(--accent-glow);
-  }
-  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
-    opacity: 0.4;
-    text-shadow: none;
-  }
-}
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Responsive Footer */
-footer {
-  padding: 50px;
-  text-align: center;
-  border-top: 1px solid var(--card-border);
-  font-size: 0.8rem;
-  color: var(--text-dim);
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  nav {
+    padding: 20px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
 }

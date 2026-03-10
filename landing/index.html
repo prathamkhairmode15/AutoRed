@@ -3,74 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTORED | Advanced Persistent Threat Emulation</title>
+    <title>AutoRed APT | Autonomous Penetration Testing Platform</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body data-theme="dark">
-    <div class="grid-bg"></div>
-
-    <nav>
-        <div class="logo">AUTORED <span>APT</span></div>
-        <div class="nav-links">
-            <a href="#features">CAPABILITIES</a>
-            <a href="../dashboard/index.html">DASHBOARD</a>
-            <button class="theme-toggle" id="theme-toggle">BLACK THEME</button>
+<body>
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="logo">AutoRed APT</div>
+        <div class="nav-right">
+            <a href="../login/index.html" class="btn-login">LOGIN</a>
         </div>
     </nav>
 
-    <main>
-        <section class="hero">
-            <h1>AUTORED&nbsp;<span>APT</span></h1>
-            <p>Advanced Breach and Attack Simulation platform. Orchestrate sophisticated adversary campaigns with autonomous operation.</p>
-            <button class="btn-primary" onclick="window.location.href='../dashboard/index.html'"><span>INITIALIZE SYSTEM</span></button>
-        </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Autonomous Penetration Testing Platform</h2>
+            <h1>AutoRed APT</h1>
+            <p>AutoRed integrates multiple penetration testing tools into a unified platform that automates vulnerability detection and security assessment for complex infrastructure.</p>
+        </div>
+    </section>
 
-        <section class="features" id="features">
-            <div class="card">
-                <div class="card-bracket"></div>
-                <h3>ADVERSARY EMULATION</h3>
-                <p>Deploy state-of-the-art simulations that mirror known APT tactics, techniques, and procedures (TTPs).</p>
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <div class="container">
+            <h2 class="section-title">Challenges in Traditional<br>Penetration Testing</h2>
+            <div class="problem-grid">
+                <div class="problem-card"><p>Fragmented security tools</p></div>
+                <div class="problem-card"><p>Manual configuration and setup</p></div>
+                <div class="problem-card"><p>High false positive results</p></div>
+                <div class="problem-card"><p>Time-consuming vulnerability analysis</p></div>
             </div>
-            <div class="card">
-                <h3>AUTONOMOUS OPERATIONS</h3>
-                <p>Intelligent agent orchestration for long-term, low-and-slow persistence testing without manual intervention.</p>
-            </div>
-            <div class="card">
-                <h3>ADVANCED REPORTING</h3>
-                <p>Get crystalline insights into your defensive posture with automated impact analysis and remediation maps.</p>
-            </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+        <div class="container">
+            <h2 class="section-title">The AutoRed Approach</h2>
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <h3>Unified Scanning</h3>
+                    <p>Orchestrate diverse scanning engines under a single command interface for maximum coverage.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>Automated Testing Workflow</h3>
+                    <p>Define and execute sophisticated attack chains without manual intervention between steps.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>AI-Assisted Vulnerability Prioritization</h3>
+                    <p>Leverage intelligent scoring to focus on high-impact vulnerabilities that matter most.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <h2 class="section-title">System Architecture</h2>
+            <div class="architecture-flow">
+                <div class="arch-block"><h3>UI Layer</h3></div>
+                <div class="arch-block"><h3>Core Processing Layer</h3></div>
+                <div class="arch-block"><h3>Data Management Layer</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow" id="workflow">
+        <div class="container">
+            <h2 class="section-title">How AutoRed Works</h2>
+            <div class="workflow-grid">
+                <div class="step-card">
+                    <span class="step-num">1</span>
+                    <h3>Target Configuration</h3>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">2</span>
+                    <h3>Scan Execution</h3>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">3</span>
+                    <h3>Real-Time Analysis</h3>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">4</span>
+                    <h3>Report Generation</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        &copy; 2026 AUTORED APT - SECURE ACCESS PORTAL
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 AutoRed APT</p>
+                <p>Ethical Security Testing Platform</p>
+            </div>
+        </div>
     </footer>
 
+    <!-- Script for Navbar transitions -->
     <script>
-        const toggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        toggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            body.setAttribute('data-theme', newTheme);
-            toggle.textContent = newTheme === 'dark' ? 'BLACK THEME' : 'WHITE THEME';
-            
-            // Animation for toggle feedback
-            toggle.style.transform = 'scale(0.95)';
-            setTimeout(() => toggle.style.transform = 'scale(1)', 100);
-        });
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+        const nav = document.getElementById('navbar');
+        window.onscroll = function() {
+            if (window.pageYOffset > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        };
     </script>
 </body>
 </html>
