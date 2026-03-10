@@ -2,137 +2,161 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoRed APT | Autonomous Penetration Testing Platform</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoRed APT | Autonomous Penetration Testing Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Apply theme early to prevent flicker
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav id="navbar">
-        <div class="logo">AutoRed APT</div>
-        <div class="nav-right">
-            <a href="../dashboard/index.html" class="btn-login">LOGIN</a>
-        </div>
-    </nav>
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="logo">AutoRed APT</div>
+    <div class="nav-right">
+      <button id="theme-toggle" class="theme-toggle-btn">THEME: DARK</button>
+      <a href="../dashboard/index.html" class="btn-login">LOGIN</a>
+    </div>
+  </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h2>Autonomous Penetration Testing Platform</h2>
-            <h1>AutoRed APT</h1>
-            <p>AutoRed integrates multiple penetration testing tools into a unified platform that automates
-                vulnerability detection and security assessment for complex infrastructure.</p>
-        </div>
-    </section>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h2>Autonomous Penetration Testing Platform</h2>
+      <h1>AutoRed APT</h1>
+      <p>AutoRed integrates multiple penetration testing tools into a unified platform that automates
+        vulnerability detection and security assessment for complex infrastructure.</p>
+    </div>
+  </section>
 
-    <!-- Problem Section -->
-    <section class="problem" id="problem">
-        <div class="container">
-            <h2 class="section-title">Challenges in Traditional<br>Penetration Testing</h2>
-            <div class="problem-grid">
-                <div class="problem-card">
-                    <p>Fragmented security tools</p>
-                </div>
-                <div class="problem-card">
-                    <p>Manual configuration and setup</p>
-                </div>
-                <div class="problem-card">
-                    <p>High false positive results</p>
-                </div>
-                <div class="problem-card">
-                    <p>Time-consuming vulnerability analysis</p>
-                </div>
-            </div>
+  <!-- Problem Section -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <h2 class="section-title">Challenges in Traditional<br>Penetration Testing</h2>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <p>Fragmented security tools</p>
         </div>
-    </section>
-
-    <!-- Solution Section -->
-    <section class="solution" id="solution">
-        <div class="container">
-            <h2 class="section-title">The AutoRed Approach</h2>
-            <div class="solution-grid">
-                <div class="solution-card">
-                    <h3>Unified Scanning</h3>
-                    <p>Orchestrate diverse scanning engines under a single command interface for maximum coverage.</p>
-                </div>
-                <div class="solution-card">
-                    <h3>Automated Testing Workflow</h3>
-                    <p>Define and execute sophisticated attack chains without manual intervention between steps.</p>
-                </div>
-                <div class="solution-card">
-                    <h3>AI-Assisted Vulnerability Prioritization</h3>
-                    <p>Leverage intelligent scoring to focus on high-impact vulnerabilities that matter most.</p>
-                </div>
-            </div>
+        <div class="problem-card">
+          <p>Manual configuration and setup</p>
         </div>
-    </section>
-
-    <!-- System Architecture Section -->
-    <section class="architecture" id="architecture">
-        <div class="container">
-            <h2 class="section-title">System Architecture</h2>
-            <div class="architecture-flow">
-                <div class="arch-block">
-                    <h3>UI Layer</h3>
-                </div>
-                <div class="arch-block">
-                    <h3>Core Processing Layer</h3>
-                </div>
-                <div class="arch-block">
-                    <h3>Data Management Layer</h3>
-                </div>
-            </div>
+        <div class="problem-card">
+          <p>High false positive results</p>
         </div>
-    </section>
-
-    <!-- Workflow Section -->
-    <section class="workflow" id="workflow">
-        <div class="container">
-            <h2 class="section-title">How AutoRed Works</h2>
-            <div class="workflow-grid">
-                <div class="step-card">
-                    <span class="step-num">1</span>
-                    <h3>Target Configuration</h3>
-                </div>
-                <div class="step-card">
-                    <span class="step-num">2</span>
-                    <h3>Scan Execution</h3>
-                </div>
-                <div class="step-card">
-                    <span class="step-num">3</span>
-                    <h3>Real-Time Analysis</h3>
-                </div>
-                <div class="step-card">
-                    <span class="step-num">4</span>
-                    <h3>Report Generation</h3>
-                </div>
-            </div>
+        <div class="problem-card">
+          <p>Time-consuming vulnerability analysis</p>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2026 AutoRed APT</p>
-                <p>Ethical Security Testing Platform</p>
-            </div>
+  <!-- Solution Section -->
+  <section class="solution" id="solution">
+    <div class="container">
+      <h2 class="section-title">The AutoRed Approach</h2>
+      <div class="solution-grid">
+        <div class="solution-card">
+          <h3>Unified Scanning</h3>
+          <p>Orchestrate diverse scanning engines under a single command interface for maximum coverage.</p>
         </div>
-    </footer>
+        <div class="solution-card">
+          <h3>Automated Testing Workflow</h3>
+          <p>Define and execute sophisticated attack chains without manual intervention between steps.</p>
+        </div>
+        <div class="solution-card">
+          <h3>AI-Assisted Vulnerability Prioritization</h3>
+          <p>Leverage intelligent scoring to focus on high-impact vulnerabilities that matter most.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Script for Navbar transitions -->
-    <script>
-        const nav = document.getElementById('navbar');
-        window.onscroll = function () {
-            if (window.pageYOffset > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        };
-    </script>
+  <!-- System Architecture Section -->
+  <section class="architecture" id="architecture">
+    <div class="container">
+      <h2 class="section-title">System Architecture</h2>
+      <div class="architecture-flow">
+        <div class="arch-block">
+          <h3>UI Layer</h3>
+        </div>
+        <div class="arch-block">
+          <h3>Core Processing Layer</h3>
+        </div>
+        <div class="arch-block">
+          <h3>Data Management Layer</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow Section -->
+  <section class="workflow" id="workflow">
+    <div class="container">
+      <h2 class="section-title">How AutoRed Works</h2>
+      <div class="workflow-grid">
+        <div class="step-card">
+          <span class="step-num">1</span>
+          <h3>Target Configuration</h3>
+        </div>
+        <div class="step-card">
+          <span class="step-num">2</span>
+          <h3>Scan Execution</h3>
+        </div>
+        <div class="step-card">
+          <span class="step-num">3</span>
+          <h3>Real-Time Analysis</h3>
+        </div>
+        <div class="step-card">
+          <span class="step-num">4</span>
+          <h3>Report Generation</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2026 AutoRed APT</p>
+        <p>Ethical Security Testing Platform</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script for Navbar transitions and Theme Toggle -->
+  <script>
+    const nav = document.getElementById('navbar');
+    window.onscroll = function () {
+      if (window.pageYOffset > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    };
+
+    const themeToggle = document.getElementById('theme-toggle');
+
+    function updateToggleText(theme) {
+      themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateToggleText(newTheme);
+    });
+
+    // Initialize text
+    updateToggleText(document.documentElement.getAttribute('data-theme'));
+  </script>
 </body>
 
 </html>
