@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTORED | Advanced Persistent Threat Emulation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+    <div class="grid-bg"></div>
+
+    <nav>
+        <div class="logo">AUTORED <span>APT</span></div>
+        <div class="nav-links">
+            <a href="#features">CAPABILITIES</a>
+            <a href="../dashboard/index.html">DASHBOARD</a>
+            <button class="theme-toggle" id="theme-toggle">BLACK THEME</button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>AUTORED&nbsp;<span>APT</span></h1>
+            <p>Advanced Breach and Attack Simulation platform. Orchestrate sophisticated adversary campaigns with autonomous operation.</p>
+            <button class="btn-primary" onclick="window.location.href='../dashboard/index.html'"><span>INITIALIZE SYSTEM</span></button>
+        </section>
+
+        <section class="features" id="features">
+            <div class="card">
+                <div class="card-bracket"></div>
+                <h3>ADVERSARY EMULATION</h3>
+                <p>Deploy state-of-the-art simulations that mirror known APT tactics, techniques, and procedures (TTPs).</p>
+            </div>
+            <div class="card">
+                <h3>AUTONOMOUS OPERATIONS</h3>
+                <p>Intelligent agent orchestration for long-term, low-and-slow persistence testing without manual intervention.</p>
+            </div>
+            <div class="card">
+                <h3>ADVANCED REPORTING</h3>
+                <p>Get crystalline insights into your defensive posture with automated impact analysis and remediation maps.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 AUTORED APT - SECURE ACCESS PORTAL
+    </footer>
+
+    <script>
+        const toggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        toggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            toggle.textContent = newTheme === 'dark' ? 'BLACK THEME' : 'WHITE THEME';
+            
+            // Animation for toggle feedback
+            toggle.style.transform = 'scale(0.95)';
+            setTimeout(() => toggle.style.transform = 'scale(1)', 100);
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

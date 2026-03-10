@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTORED | Control Dashboard</title>
+    <link rel="stylesheet" href="../landing/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-theme="dark">
+    <div class="grid-bg"></div>
+
+    <nav>
+        <div class="logo">AUTORED <span>APT</span></div>
+        <div class="nav-links">
+            <a href="../landing/index.html">GO TO LANDING</a>
+            <button class="theme-toggle" id="theme-toggle">BLACK THEME</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="#" class="sidebar-item active">OVERVIEW</a>
+            <a href="#" class="sidebar-item">SIMULATIONS</a>
+            <a href="#" class="sidebar-item">AGENTS</a>
+            <a href="#" class="sidebar-item">REPORTS</a>
+            <a href="#" class="sidebar-item">SETTINGS</a>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">SYSTEM OVERVIEW</h1>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Active Simulations</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">3 pending approval</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Autonomous Agents</div>
+                    <div class="stat-value">84</div>
+                    <div class="stat-label">All systems nominal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Breach Success Rate</div>
+                    <div class="stat-value">62%</div>
+                    <div class="stat-label">+5% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">System Uptime</div>
+                    <div class="stat-value">99.9%</div>
+                    <div class="stat-label">Stable connection</div>
+                </div>
+            </div>
+
+            <section class="activity-section">
+                <div class="section-header">
+                    RECENT ACTIVITY
+                    <span style="font-size: 0.7rem; color: var(--accent);">LIVE FEED</span>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span>Campaign "Red Ghost" initiated on Workstation-422</span>
+                        <div>
+                            <span class="timestamp">10:42:15</span>
+                            <span class="activity-status">/ RUNNING</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span>Credential harvesting successful on Domain Controller</span>
+                        <div>
+                            <span class="timestamp">10:35:01</span>
+                            <span class="activity-status">/ SUCCESS</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span>Persistence established on SQL-Server-Prod</span>
+                        <div>
+                            <span class="timestamp">09:58:32</span>
+                            <span class="activity-status">/ SUCCESS</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span>Lateral movement detected from Web-Srv to File-Srv</span>
+                        <div>
+                            <span class="timestamp">09:12:44</span>
+                            <span class="activity-status" style="color: var(--text-dim);">/ LOGGED</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const toggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check for saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', savedTheme);
+        toggle.textContent = savedTheme === 'dark' ? 'BLACK THEME' : 'WHITE THEME';
+
+        toggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            body.setAttribute('data-theme', newTheme);
+            toggle.textContent = newTheme === 'dark' ? 'BLACK THEME' : 'WHITE THEME';
+            localStorage.setItem('theme', newTheme);
+
+            toggle.style.transform = 'scale(0.95)';
+            setTimeout(() => toggle.style.transform = 'scale(1)', 100);
+        });
+    </script>
+</body>
+
+</html>
