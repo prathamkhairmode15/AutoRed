@@ -1,181 +1,210 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AutoRed | Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script>
-        // Apply theme early to prevent flicker
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+      // Apply theme early to prevent flicker
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="app-container">
-        <!-- Top Navigation Bar -->
-        <nav class="top-navbar">
-            <div class="nav-logo pixel-font">AutoRed <span>APT</span></div>
-            <div class="nav-user">
-                <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
-                <span class="sub-pixel-font">Guest_User_001</span>
-                <button class="icon-btn" title="Settings">⚙</button>
-                <a href="../landing/index.html" class="logout-link" title="Logout">⏻</a>
-            </div>
-        </nav>
-
-        <div class="main-wrapper">
-            <!-- Left Sidebar Navigation -->
-            <aside class="sidebar">
-                <a href="#" class="sidebar-item active">
-                    <span class="sub-pixel-font">Dashboard</span>
-                </a>
-                <a href="#" class="sidebar-item">
-                    <span class="sub-pixel-font">New Scan</span>
-                </a>
-                <a href="#" class="sidebar-item">
-                    <span class="sub-pixel-font">Scan History</span>
-                </a>
-                <a href="#" class="sidebar-item">
-                    <span class="sub-pixel-font">Reports</span>
-                </a>
-                <a href="#" class="sidebar-item">
-                    <span class="sub-pixel-font">Settings</span>
-                </a>
-            </aside>
-
-            <!-- Main Dashboard Content Area -->
-            <main class="content-area">
-                <div class="dashboard-header">
-                    <h2 class="pixel-font"
-                        style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--accent-color);">System Overview
-                    </h2>
-                    <p class="sub-pixel-font" style="margin-bottom: 2rem; color: var(--text-secondary);">Security
-                        Status: <span style="color: var(--accent-color);">[OPTIMAL]</span></p>
-                </div>
-
-                <!-- Section 1: Overview Statistics Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-title sub-pixel-font">Total Scans</div>
-                        <div class="stat-value">1,204</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-title sub-pixel-font">Active Scans</div>
-                        <div class="stat-value">03</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-title sub-pixel-font">Targets Tested</div>
-                        <div class="stat-value">84</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-title sub-pixel-font">Vulnerabilities Detected</div>
-                        <div class="stat-value">42</div>
-                    </div>
-                </div>
-
-                <!-- Section 2: Quick Action Panel -->
-                <section class="action-panel">
-                    <button class="btn-primary">Start New Scan</button>
-                </section>
-
-                <!-- Section 3: Recent Scan Activity Table -->
-                <section class="activity-section">
-                    <h3 class="pixel-font" style="font-size: 0.8rem; margin-bottom: 1.5rem;">Recent Scan Activity</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Target</th>
-                                    <th>Scan Type</th>
-                                    <th>Tools Used</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>View</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>example.com</td>
-                                    <td>Full Scan</td>
-                                    <td>Nmap, Nikto</td>
-                                    <td style="color: var(--accent-color);">Completed</td>
-                                    <td>Today</td>
-                                    <td><button class="icon-btn">👁</button></td>
-                                </tr>
-                                <tr>
-                                    <td>internal.local</td>
-                                    <td>Port Scan</td>
-                                    <td>Nmap</td>
-                                    <td style="color: var(--accent-color);">Completed</td>
-                                    <td>Yesterday</td>
-                                    <td><button class="icon-btn">👁</button></td>
-                                </tr>
-                                <tr>
-                                    <td>api.production.co</td>
-                                    <td>Vulnerability</td>
-                                    <td>OpenVAS, Nikto</td>
-                                    <td style="color: #ff3b3b;">Failed</td>
-                                    <td>Mar 08</td>
-                                    <td><button class="icon-btn">👁</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Section 4: Active Scan Status Panel -->
-                <section class="status-panel">
-                    <h3 class="pixel-font" style="font-size: 0.8rem; margin-bottom: 1.5rem;">Live Scan Status</h3>
-                    <div class="status-info">
-                        <div class="status-item sub-pixel-font">Target: <span>example.com</span></div>
-                        <div class="status-item sub-pixel-font">Tool Running: <span>Port Scan</span></div>
-                        <div class="status-item sub-pixel-font">Progress: 45%</div>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar"></div>
-                    </div>
-                </section>
-            </main>
+      <!-- Top Navigation Bar -->
+      <nav class="top-navbar">
+        <div class="nav-logo pixel-font">AutoRed <span>Apt</span></div>
+        <div class="nav-user">
+          <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
+          <span class="sub-pixel-font">Guest_User_001</span>
+          <button class="icon-btn" title="Settings">⚙</button>
+          <a href="../landing/index.html" class="logout-link" title="Logout"
+            >⏻</a
+          >
         </div>
+      </nav>
+
+      <div class="main-wrapper">
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+          <a href="#" class="sidebar-item active">
+            <span class="sub-pixel-font">Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-item">
+            <span class="sub-pixel-font">New Scan</span>
+          </a>
+          <a href="#" class="sidebar-item">
+            <span class="sub-pixel-font">Scan History</span>
+          </a>
+          <a href="#" class="sidebar-item">
+            <span class="sub-pixel-font">Reports</span>
+          </a>
+          <a href="#" class="sidebar-item">
+            <span class="sub-pixel-font">Settings</span>
+          </a>
+        </aside>
+
+        <!-- Main Dashboard Content Area -->
+        <main class="content-area">
+          <div class="dashboard-header">
+            <h2
+              class="pixel-font"
+              style="
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+                color: var(--accent-color);
+              "
+            >
+              System Overview
+            </h2>
+            <p
+              class="sub-pixel-font"
+              style="margin-bottom: 2rem; color: var(--text-secondary)"
+            >
+              Security Status:
+              <span style="color: var(--accent-color)">[OPTIMAL]</span>
+            </p>
+          </div>
+
+          <!-- Section 1: Overview Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title sub-pixel-font">Total Scans</div>
+              <div class="stat-value">1,204</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title sub-pixel-font">Active Scans</div>
+              <div class="stat-value">03</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title sub-pixel-font">Targets Tested</div>
+              <div class="stat-value">84</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title sub-pixel-font">
+                Vulnerabilities Detected
+              </div>
+              <div class="stat-value">42</div>
+            </div>
+          </div>
+
+          <!-- Section 2: Quick Action Panel -->
+          <section class="action-panel">
+            <button class="btn-primary">Start New Scan</button>
+          </section>
+
+          <!-- Section 3: Recent Scan Activity Table -->
+          <section class="activity-section">
+            <h3
+              class="pixel-font"
+              style="font-size: 0.8rem; margin-bottom: 1.5rem"
+            >
+              Recent Scan Activity
+            </h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Target</th>
+                    <th>Scan Type</th>
+                    <th>Tools Used</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>example.com</td>
+                    <td>Full Scan</td>
+                    <td>Nmap, Nikto</td>
+                    <td style="color: var(--accent-color)">Completed</td>
+                    <td>Today</td>
+                    <td><button class="icon-btn">👁</button></td>
+                  </tr>
+                  <tr>
+                    <td>internal.local</td>
+                    <td>Port Scan</td>
+                    <td>Nmap</td>
+                    <td style="color: var(--accent-color)">Completed</td>
+                    <td>Yesterday</td>
+                    <td><button class="icon-btn">👁</button></td>
+                  </tr>
+                  <tr>
+                    <td>api.production.co</td>
+                    <td>Vulnerability</td>
+                    <td>OpenVAS, Nikto</td>
+                    <td style="color: #ff3b3b">Failed</td>
+                    <td>Mar 08</td>
+                    <td><button class="icon-btn">👁</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Section 4: Active Scan Status Panel -->
+          <section class="status-panel">
+            <h3
+              class="pixel-font"
+              style="font-size: 0.8rem; margin-bottom: 1.5rem"
+            >
+              Live Scan Status
+            </h3>
+            <div class="status-info">
+              <div class="status-item sub-pixel-font">
+                Target: <span>example.com</span>
+              </div>
+              <div class="status-item sub-pixel-font">
+                Tool Running: <span>Port Scan</span>
+              </div>
+              <div class="status-item sub-pixel-font">Progress: 45%</div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar"></div>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
 
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
+      const themeToggle = document.getElementById("theme-toggle");
 
-        function updateToggleText(theme) {
-            themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
-        }
+      function updateToggleText(theme) {
+        themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
+      }
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      themeToggle.addEventListener("click", () => {
+        const currentTheme =
+          document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateToggleText(newTheme);
-        });
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateToggleText(newTheme);
+      });
 
-        // Initialize text
-        updateToggleText(document.documentElement.getAttribute('data-theme'));
+      // Initialize text
+      updateToggleText(document.documentElement.getAttribute("data-theme"));
     </script>
 
     <style>
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-        }
+      .icon-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+      }
 
-        .icon-btn:hover {
-            color: var(--accent-color);
-        }
+      .icon-btn:hover {
+        color: var(--accent-color);
+      }
     </style>
-</body>
-
+  </body>
 </html>
