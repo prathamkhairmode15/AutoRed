@@ -134,34 +134,54 @@ section {
 
 /* ── Hero Section ── */
 .hero {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  padding-top: 140px;
+  /* Offset + Margin for navbar */
   opacity: 0;
   animation: fadeIn 1s forwards;
 }
 
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+}
+
+.hero-left {
+  flex: 0 0 45%;
+  text-align: left;
+}
+
+.hero-right {
+  flex: 0 0 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hero h1 {
-  font-size: clamp(2rem, 6vw, 4rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
   margin-bottom: 15px;
   color: var(--text-main);
+  line-height: 1.1;
 }
 
 .hero h2 {
   font-size: 1.2rem;
   font-family: var(--font-main);
   color: var(--accent);
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   letter-spacing: 1px;
 }
 
 .hero p {
-  max-width: 800px;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   margin-bottom: 30px;
+  line-height: 1.6;
 }
 
 .hero-supporting {
@@ -175,9 +195,8 @@ section {
 .hero-highlights {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 15px;
-  max-width: 900px;
 }
 
 .highlight-badge {
@@ -189,6 +208,21 @@ section {
   font-size: 0.85rem;
   border-radius: 20px;
   white-space: nowrap;
+}
+
+/* ── Hero 3D Earth Globe.gl ── */
+#globeViz {
+  cursor: grab;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255, 4, 4, 0.15);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#globeViz:active {
+  cursor: grabbing;
 }
 
 /* ── Problem Section ── */
@@ -450,10 +484,78 @@ footer {
 /* ── Responsive ── */
 @media (max-width: 768px) {
   nav {
-    padding: 20px;
+    padding: 15px;
+  }
+
+  .nav-right {
+    gap: 15px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .hero {
+    height: auto;
+    padding-top: 120px;
+    padding-bottom: 60px;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+  }
+
+  .hero-left,
+  .hero-right {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  .hero-left {
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .hero-highlights {
+    justify-content: center;
   }
 
   .hero h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+  }
+
+  .hero h2 {
+    font-size: 1.1rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .earth-wrapper {
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  #globeViz {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-highlights {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .highlight-badge {
+    text-align: center;
+    white-space: normal;
+  }
+
+  #globeViz {
+    transform: scale(0.85);
   }
 }
