@@ -1,0 +1,27 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Sensitive info
+.env
+firebase-key.json
+
+# Temporary files
+tmp/
+temp/

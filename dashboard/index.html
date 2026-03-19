@@ -19,11 +19,9 @@
         <div class="nav-logo pixel-font">AutoRed <span>APT</span></div>
         <div class="nav-user">
           <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
-          <span class="sub-pixel-font">Guest_User_001</span>
+          <span id="user-display" class="sub-pixel-font">Authenticating...</span>
           <button class="icon-btn" title="Settings">⚙</button>
-          <a href="../landing/index.html" class="logout-link" title="Logout"
-            >⏻</a
-          >
+          <button id="logout-btn" class="logout-link" title="Logout" style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: var(--text-secondary);">⏻</button>
         </div>
       </nav>
 
@@ -65,7 +63,7 @@
               style="margin-bottom: 2rem; color: var(--text-secondary)"
             >
               Security Status:
-              <span style="color: var(--accent-color)">[OPTIMAL]</span>
+              <span id="system-status" style="color: var(--accent-color)">[OPTIMAL]</span>
             </p>
           </div>
 
@@ -73,21 +71,21 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-title sub-pixel-font">Total Scans</div>
-              <div class="stat-value">1,204</div>
+              <div id="total-scans" class="stat-value">0</div>
             </div>
             <div class="stat-card">
               <div class="stat-title sub-pixel-font">Active Scans</div>
-              <div class="stat-value">03</div>
+              <div id="active-scans" class="stat-value">0</div>
             </div>
             <div class="stat-card">
               <div class="stat-title sub-pixel-font">Targets Tested</div>
-              <div class="stat-value">84</div>
+              <div id="targets-tested" class="stat-value">0</div>
             </div>
             <div class="stat-card">
               <div class="stat-title sub-pixel-font">
                 Vulnerabilities Detected
               </div>
-              <div class="stat-value">42</div>
+              <div id="total-vulnerabilities" class="stat-value">0</div>
             </div>
           </div>
 
@@ -116,31 +114,9 @@
                     <th>View</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>example.com</td>
-                    <td>Full Scan</td>
-                    <td>Nmap, Nikto</td>
-                    <td style="color: var(--accent-color)">Completed</td>
-                    <td>Today</td>
-                    <td><button class="icon-btn">👁</button></td>
-                  </tr>
-                  <tr>
-                    <td>internal.local</td>
-                    <td>Port Scan</td>
-                    <td>Nmap</td>
-                    <td style="color: var(--accent-color)">Completed</td>
-                    <td>Yesterday</td>
-                    <td><button class="icon-btn">👁</button></td>
-                  </tr>
-                  <tr>
-                    <td>api.production.co</td>
-                    <td>Vulnerability</td>
-                    <td>OpenVAS, Nikto</td>
-                    <td style="color: #ff3b3b">Failed</td>
-                    <td>Mar 08</td>
-                    <td><button class="icon-btn">👁</button></td>
-                  </tr>
+                <tbody id="scans-table-body">
+                  <!-- Data will be populated by JS -->
+                  <tr><td colspan="6" style="text-align:center; padding: 2rem;">Loading scan data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -154,42 +130,206 @@
             >
               Live Scan Status
             </h3>
-            <div class="status-info">
-              <div class="status-item sub-pixel-font">
-                Target: <span>example.com</span>
-              </div>
-              <div class="status-item sub-pixel-font">
-                Tool Running: <span>Port Scan</span>
-              </div>
-              <div class="status-item sub-pixel-font">Progress: 45%</div>
-            </div>
-            <div class="progress-container">
-              <div class="progress-bar"></div>
+            <div id="live-scan-container">
+              <p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>
             </div>
           </section>
         </main>
       </div>
     </div>
 
-    <script>
-      const themeToggle = document.getElementById("theme-toggle");
+    <script type="module">
+      import { auth, db, onAuthStateChanged, signOut, collection, query, where, onSnapshot, addDoc, updateDoc, doc, serverTimestamp } from '../js/firebase.js';
 
+      const userDisplay = document.getElementById("user-display");
+      const logoutBtn = document.getElementById("logout-btn");
+      const themeToggle = document.getElementById("theme-toggle");
+      const scansTableBody = document.getElementById("scans-table-body");
+      const startScanBtn = document.querySelector(".btn-primary");
+      
+      const totalScansEl = document.getElementById("total-scans");
+      const activeScansEl = document.getElementById("active-scans");
+      const targetsTestedEl = document.getElementById("targets-tested");
+      const vulnerabilitiesEl = document.getElementById("total-vulnerabilities");
+
+      let currentUser = null;
+
+      // Check Authentication
+      let isInitialCheck = true;
+      onAuthStateChanged(auth, (user) => {
+        console.log("Dashboard Auth State Changed:", user ? `Logged in as ${user.email}` : "Not logged in");
+        if (user) {
+          currentUser = user;
+          userDisplay.textContent = user.email.split('@')[0].toUpperCase();
+          initializeDashboard(user.uid);
+          isInitialCheck = false;
+        } else {
+          // Only redirect if it's not the very first check or if we are sure user is logged out
+          if (!isInitialCheck) {
+            console.log("Redirecting to login...");
+            window.location.href = '../login/index.html';
+          }
+          isInitialCheck = false;
+        }
+      });
+
+      // Start New Scan Logic
+      startScanBtn.addEventListener('click', async () => {
+        if (!currentUser) return;
+
+        const target = prompt("Enter target URL or IP (e.g., example.com):");
+        if (!target) return;
+
+        const scanType = prompt("Enter Scan Type (e.g., Full Scan, Port Scan, Vulnerability):", "Full Scan");
+        if (!scanType) return;
+
+        try {
+          const docRef = await addDoc(collection(db, "scans"), {
+            userId: currentUser.uid,
+            target: target,
+            scanType: scanType,
+            status: "Running",
+            progress: 0,
+            vulnerabilities: 0,
+            toolsUsed: "Nmap, Nikto",
+            createdAt: serverTimestamp()
+          });
+
+          simulateScan(docRef.id);
+        } catch (error) {
+          console.error("Error creating scan:", error);
+          alert("Failed to start scan. Check console for details.");
+        }
+      });
+
+      async function simulateScan(scanId) {
+        let progress = 0;
+        const interval = setInterval(async () => {
+          progress += Math.floor(Math.random() * 10) + 5;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            await updateDoc(doc(db, "scans", scanId), {
+              progress: 100,
+              status: "Completed",
+              vulnerabilities: Math.floor(Math.random() * 5)
+            });
+          } else {
+            await updateDoc(doc(db, "scans", scanId), {
+              progress: progress
+            });
+          }
+        }, 3000);
+      }
+
+      // Logout Logic
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          await signOut(auth);
+        } catch (error) {
+          console.error("Logout failed", error);
+        }
+      });
+
+      // Theme toggle
       function updateToggleText(theme) {
         themeToggle.textContent = `THEME: ${theme.toUpperCase()}`;
       }
 
       themeToggle.addEventListener("click", () => {
-        const currentTheme =
-          document.documentElement.getAttribute("data-theme");
+        const currentTheme = document.documentElement.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
-
         document.documentElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("theme", newTheme);
         updateToggleText(newTheme);
       });
 
-      // Initialize text
       updateToggleText(document.documentElement.getAttribute("data-theme"));
+
+      // Dashboard Initialization
+      function initializeDashboard(uid) {
+        const scansRef = collection(db, "scans");
+        const q = query(scansRef, where("userId", "==", uid));
+
+        // Real-time listener
+        onSnapshot(q, (snapshot) => {
+          const scans = [];
+          let totalVulnerabilities = 0;
+          let activeScansCount = 0;
+          const uniqueTargets = new Set();
+
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            scans.push({ id: doc.id, ...data });
+            
+            if (data.status === 'Running' || data.status === 'Active') {
+              activeScansCount++;
+            }
+            if (data.vulnerabilities) {
+              totalVulnerabilities += data.vulnerabilities;
+            }
+            uniqueTargets.add(data.target);
+          });
+
+          // Update Stats
+          totalScansEl.textContent = scans.length.toString().padStart(2, '0');
+          activeScansEl.textContent = activeScansCount.toString().padStart(2, '0');
+          targetsTestedEl.textContent = uniqueTargets.size.toString().padStart(2, '0');
+          vulnerabilitiesEl.textContent = totalVulnerabilities.toString().padStart(2, '0');
+
+          // Update Table
+          renderTable(scans);
+          
+          // Find the most recent active scan
+          const activeScans = scans.filter(s => s.status === 'Running' || s.status === 'Active');
+          activeScans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+          updateLiveScan(activeScans[0]);
+        });
+      }
+
+      function renderTable(scans) {
+        if (scans.length === 0) {
+          scansTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No scans found. Start your first scan!</td></tr>';
+          return;
+        }
+
+        // Sort by date descending
+        const sortedScans = [...scans].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        scansTableBody.innerHTML = sortedScans.map(scan => `
+          <tr>
+            <td>${scan.target}</td>
+            <td>${scan.scanType}</td>
+            <td>${scan.toolsUsed || 'N/A'}</td>
+            <td style="color: ${scan.status === 'Completed' ? 'var(--accent-color)' : scan.status === 'Failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status}</td>
+            <td>${scan.createdAt ? new Date(scan.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
+            <td><button class="icon-btn" onclick="alert('Scan ID: ${scan.id}')">👁</button></td>
+          </tr>
+        `).join('');
+      }
+
+      function updateLiveScan(activeScan) {
+        const container = document.getElementById('live-scan-container');
+        if (!activeScan) {
+          container.innerHTML = '<p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>';
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="status-info">
+            <div class="status-item sub-pixel-font">
+              Target: <span>${activeScan.target}</span>
+            </div>
+            <div class="status-item sub-pixel-font">
+              Tool Running: <span>${activeScan.scanType}</span>
+            </div>
+            <div class="status-item sub-pixel-font">Progress: ${activeScan.progress || 0}%</div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: ${activeScan.progress || 0}%"></div>
+          </div>
+        `;
+      }
     </script>
 
     <style>
