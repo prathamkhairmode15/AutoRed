@@ -155,21 +155,15 @@
       let currentUser = null;
 
       // Check Authentication
-      let isInitialCheck = true;
       onAuthStateChanged(auth, (user) => {
         console.log("Dashboard Auth State Changed:", user ? `Logged in as ${user.email}` : "Not logged in");
         if (user) {
           currentUser = user;
           userDisplay.textContent = user.email.split('@')[0].toUpperCase();
           initializeDashboard(user.uid);
-          isInitialCheck = false;
         } else {
-          // Only redirect if it's not the very first check or if we are sure user is logged out
-          if (!isInitialCheck) {
-            console.log("Redirecting to login...");
-            window.location.href = '../login/index.html';
-          }
-          isInitialCheck = false;
+          console.log("Redirecting to login...");
+          window.location.replace('../login/index.html');
         }
       });
 

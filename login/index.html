@@ -96,7 +96,7 @@
                 await signInWithEmailAndPassword(auth, email, password);
                 showStatus('// ACCESS GRANTED. REDIRECTING...', 'success');
                 setTimeout(() => {
-                    window.location.href = '../dashboard/index.html';
+                    window.location.replace('../dashboard/index.html');
                 }, 1000);
             } catch (error) {
                 console.error("Firebase Auth Error:", error);
