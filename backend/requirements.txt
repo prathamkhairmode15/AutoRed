@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+firebase-admin
+sqlalchemy
+databases[mysql]
+aiomysql
+pymysql
+pydantic
+python-dotenv

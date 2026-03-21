@@ -25,3 +25,15 @@ firebase-key.json
 # Temporary files
 tmp/
 temp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# Firebase Configs
+serviceAccountKey.json

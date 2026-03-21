@@ -32,15 +32,15 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span class="sub-pixel-font">Dashboard</span>
           </a>
-          <a href="#" class="sidebar-item">
+          <a href="../new-scan/index.html" class="sidebar-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span class="sub-pixel-font">New Scan</span>
           </a>
-          <a href="#" class="sidebar-item">
+          <a href="../scan-history/index.html" class="sidebar-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             <span class="sub-pixel-font">Scan History</span>
           </a>
-          <a href="#" class="sidebar-item">
+          <a href="../reports/index.html" class="sidebar-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             <span class="sub-pixel-font">Reports</span>
           </a>
@@ -137,15 +137,29 @@
             </h3>
             <div id="live-scan-container">
               <p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>
-            </div>
           </section>
+
+          <!-- Modal for Live/Historical Terminal -->
+          <div id="terminal-modal" class="modal hidden">
+            <div class="modal-content" style="background: #0d0d0d; border-color: #333;">
+              <div class="terminal-header" style="justify-content: space-between; display: flex; align-items: center; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 0.5rem; padding: 1rem;">
+                <span class="terminal-title sub-pixel-font" id="term-modal-title" style="color: #888; font-size: 0.8rem;">Terminal Output</span>
+                <span class="close-btn" id="close-term-modal" style="color: var(--text-secondary); font-size: 2rem; line-height: 1; cursor: pointer;">&times;</span>
+              </div>
+              <div class="terminal-window" id="term-modal-window" style="height: 400px; overflow-y: auto; padding: 1rem; position: relative;">
+                <pre id="term-modal-output" style="margin: 0; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; color: #00ff00; white-space: pre-wrap; word-wrap: break-word;"></pre>
+              </div>
+            </div>
+          </div>
+
         </main>
       </div>
     </div>
 
     <script type="module">
-      import { auth, db, onAuthStateChanged, signOut, collection, query, where, onSnapshot, addDoc, updateDoc, doc, serverTimestamp } from '../js/firebase.js';
+      import { auth, onAuthStateChanged, signOut } from '../js/firebase.js';
 
+      const API_BASE_URL = "http://localhost:8000/api";
       const userDisplay = document.getElementById("user-display");
       const logoutBtn = document.getElementById("logout-btn");
       const themeToggle = document.getElementById("theme-toggle");
@@ -158,68 +172,20 @@
       const vulnerabilitiesEl = document.getElementById("total-vulnerabilities");
 
       let currentUser = null;
+      let idToken = null;
+      let pollInterval = null;
 
       // Check Authentication
-      onAuthStateChanged(auth, (user) => {
-        console.log("Dashboard Auth State Changed:", user ? `Logged in as ${user.email}` : "Not logged in");
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
           currentUser = user;
           userDisplay.textContent = user.email.split('@')[0].toUpperCase();
-          initializeDashboard(user.uid);
+          idToken = await user.getIdToken();
+          initializeDashboard();
         } else {
-          console.log("Redirecting to login...");
           window.location.replace('../login/index.html');
         }
       });
-
-      // Start New Scan Logic
-      startScanBtn.addEventListener('click', async () => {
-        if (!currentUser) return;
-
-        const target = prompt("Enter target URL or IP (e.g., example.com):");
-        if (!target) return;
-
-        const scanType = prompt("Enter Scan Type (e.g., Full Scan, Port Scan, Vulnerability):", "Full Scan");
-        if (!scanType) return;
-
-        try {
-          const docRef = await addDoc(collection(db, "scans"), {
-            userId: currentUser.uid,
-            target: target,
-            scanType: scanType,
-            status: "Running",
-            progress: 0,
-            vulnerabilities: 0,
-            toolsUsed: "Nmap, Nikto",
-            createdAt: serverTimestamp()
-          });
-
-          simulateScan(docRef.id);
-        } catch (error) {
-          console.error("Error creating scan:", error);
-          alert("Failed to start scan. Check console for details.");
-        }
-      });
-
-      async function simulateScan(scanId) {
-        let progress = 0;
-        const interval = setInterval(async () => {
-          progress += Math.floor(Math.random() * 10) + 5;
-          if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-            await updateDoc(doc(db, "scans", scanId), {
-              progress: 100,
-              status: "Completed",
-              vulnerabilities: Math.floor(Math.random() * 5)
-            });
-          } else {
-            await updateDoc(doc(db, "scans", scanId), {
-              progress: progress
-            });
-          }
-        }, 3000);
-      }
 
       // Logout Logic
       logoutBtn.addEventListener('click', async () => {
@@ -229,6 +195,11 @@
           console.error("Logout failed", error);
         }
       });
+
+      // Action button
+      if (startScanBtn) {
+         startScanBtn.addEventListener('click', () => window.location.href = '../new-scan/index.html');
+      }
 
       // Theme toggle
       function updateToggleText(theme) {
@@ -246,44 +217,48 @@
       updateToggleText(document.documentElement.getAttribute("data-theme"));
 
       // Dashboard Initialization
-      function initializeDashboard(uid) {
-        const scansRef = collection(db, "scans");
-        const q = query(scansRef, where("userId", "==", uid));
+      async function initializeDashboard() {
+        await fetchScans();
+        // Poll every 3 seconds for real-time updates
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(fetchScans, 3000);
+      }
 
-        // Real-time listener
-        onSnapshot(q, (snapshot) => {
-          const scans = [];
-          let totalVulnerabilities = 0;
+      async function fetchScans() {
+        if (!idToken && currentUser) {
+            idToken = await currentUser.getIdToken(true);
+        }
+        
+        try {
+          const res = await fetch(`${API_BASE_URL}/scans`, {
+            headers: { "Authorization": `Bearer ${idToken}` }
+          });
+          if (!res.ok) return;
+          
+          const scans = await res.json();
+          
           let activeScansCount = 0;
           const uniqueTargets = new Set();
 
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            scans.push({ id: doc.id, ...data });
-            
-            if (data.status === 'Running' || data.status === 'Active') {
-              activeScansCount++;
-            }
-            if (data.vulnerabilities) {
-              totalVulnerabilities += data.vulnerabilities;
-            }
-            uniqueTargets.add(data.target);
+          scans.forEach(scan => {
+            if (scan.status === 'running') activeScansCount++;
+            uniqueTargets.add(scan.target);
           });
 
           // Update Stats
           totalScansEl.textContent = scans.length.toString().padStart(2, '0');
           activeScansEl.textContent = activeScansCount.toString().padStart(2, '0');
           targetsTestedEl.textContent = uniqueTargets.size.toString().padStart(2, '0');
-          vulnerabilitiesEl.textContent = totalVulnerabilities.toString().padStart(2, '0');
+          vulnerabilitiesEl.textContent = "00"; // Placeholder for future vuln scanner
 
-          // Update Table
           renderTable(scans);
-          
+
           // Find the most recent active scan
-          const activeScans = scans.filter(s => s.status === 'Running' || s.status === 'Active');
-          activeScans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-          updateLiveScan(activeScans[0]);
-        });
+          const activeScans = scans.filter(s => s.status === 'running');
+          updateLiveScan(activeScans[0] || null);
+        } catch (error) {
+           console.error("Error fetching scans:", error);
+        }
       }
 
       function renderTable(scans) {
@@ -292,17 +267,16 @@
           return;
         }
 
-        // Sort by date descending
-        const sortedScans = [...scans].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        const recentScans = scans.slice(0, 5);
 
-        scansTableBody.innerHTML = sortedScans.map(scan => `
+        scansTableBody.innerHTML = recentScans.map(scan => `
           <tr>
             <td>${scan.target}</td>
-            <td>${scan.scanType}</td>
-            <td>${scan.toolsUsed || 'N/A'}</td>
-            <td style="color: ${scan.status === 'Completed' ? 'var(--accent-color)' : scan.status === 'Failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status}</td>
-            <td>${scan.createdAt ? new Date(scan.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
-            <td><button class="icon-btn" onclick="alert('Scan ID: ${scan.id}')">👁</button></td>
+            <td>Passive Recon</td>
+            <td>nslookup, whois, theHarvester</td>
+            <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
+            <td>${scan.created_at ? new Date(scan.created_at).toLocaleString() : 'N/A'}</td>
+            <td><button class="icon-btn" onclick="window.viewScanTerminal(${scan.id}, '${scan.status}', '${scan.target}')">👁</button></td>
           </tr>
         `).join('');
       }
@@ -320,14 +294,109 @@
               Target: <span>${activeScan.target}</span>
             </div>
             <div class="status-item sub-pixel-font">
-              Tool Running: <span>${activeScan.scanType}</span>
+              Tool Running: <span>Passive Recon</span>
             </div>
-            <div class="status-item sub-pixel-font">Progress: ${activeScan.progress || 0}%</div>
+            <div class="status-item sub-pixel-font">Status: RUNNING</div>
           </div>
           <div class="progress-container">
-            <div class="progress-bar" style="width: ${activeScan.progress || 0}%"></div>
+            <div class="progress-bar" style="width: 50%; opacity: 0.8;"></div>
           </div>
         `;
+      }
+      
+      // Terminal Modal Logic
+      const termModal = document.getElementById("terminal-modal");
+      const closeTermModal = document.getElementById("close-term-modal");
+      const termOutput = document.getElementById("term-modal-output");
+      const termWindow = document.getElementById("term-modal-window");
+      const termTitle = document.getElementById("term-modal-title");
+      
+      closeTermModal.addEventListener("click", () => {
+          termModal.classList.add("hidden");
+      });
+      window.addEventListener("click", (e) => {
+          if (e.target === termModal) termModal.classList.add("hidden");
+      });
+      
+      function appendToTerminal(text) {
+          const span = document.createElement("span");
+          span.textContent = text + "\n";
+          termOutput.appendChild(span);
+          termWindow.scrollTop = termWindow.scrollHeight;
+      }
+      
+      window.viewScanTerminal = async function(scanId, status, target) {
+          termModal.classList.remove("hidden");
+          termTitle.textContent = `Terminal Log: ${target}`;
+          termOutput.innerHTML = '';
+          
+          if (!idToken && currentUser) {
+              idToken = await currentUser.getIdToken(true);
+          }
+          
+          if (status === 'running') {
+              appendToTerminal(`> Connecting to live telemetry for ${target}...\n`);
+              // Live SSE Stream
+              try {
+                  const response = await fetch(`${API_BASE_URL}/scan/stream/${scanId}`, {
+                      method: 'GET',
+                      headers: {
+                          "Authorization": `Bearer ${idToken}`,
+                          "Accept": "text/event-stream"
+                      }
+                  });
+                  if (!response.ok) throw new Error("Stream connection failed");
+                  const reader = response.body.getReader();
+                  const decoder = new TextDecoder("utf-8");
+                  let buffer = '';
+                  while (true) {
+                      const { value, done } = await reader.read();
+                      if (done) {
+                          if (buffer) processSSE(buffer);
+                          break;
+                      }
+                      buffer += decoder.decode(value, { stream: true });
+                      let lines = buffer.split('\n');
+                      buffer = lines.pop(); 
+                      for (let line of lines) processSSE(line);
+                  }
+              } catch (e) {
+                  appendToTerminal(`[ERROR] Live stream failed: ${e.message}`);
+              }
+          } else {
+              appendToTerminal(`> Fetching historical terminal logs for ${target}...\n`);
+              // Historical completed scan
+              try {
+                  const res = await fetch(`${API_BASE_URL}/scan/${scanId}`, {
+                      headers: { "Authorization": `Bearer ${idToken}` }
+                  });
+                  if (!res.ok) throw new Error("Failed to fetch historical logs");
+                  const data = await res.json();
+                  const results = data.results || [];
+                  if (results.length === 0) {
+                      appendToTerminal(`[ALERT] No log evidence found for this scan.`);
+                      return;
+                  }
+                  results.forEach(r => {
+                      appendToTerminal(`--- Module: ${r.type.toUpperCase()} ---`);
+                      appendToTerminal(r.raw_output || "NO OUTPUT");
+                      appendToTerminal(`\n\n`);
+                  });
+                  appendToTerminal(`> End of historical record.`);
+              } catch (e) {
+                  appendToTerminal(`[ERROR] Fetch failed: ${e.message}`);
+              }
+          }
+      };
+      
+      function processSSE(line) {
+          if (line.startsWith("data: ")) {
+              let textContent = line.replace("data: ", "");
+              if (textContent.includes('{"status": "completed"}')) return;
+              if (textContent !== "null" && textContent.trim() !== "") {
+                  appendToTerminal(textContent);
+              }
+          }
       }
     </script>
 

@@ -446,3 +446,29 @@ tr:hover td {
 .table-container:hover, .status-panel:hover {
     border-color: var(--border-hover);
 }
+
+/* Modal CSS */
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none !important;
+}
+
+.modal-content {
+  background: var(--surface-bg);
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}

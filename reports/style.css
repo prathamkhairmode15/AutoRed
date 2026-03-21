@@ -1,0 +1,28 @@
+/* Specific active styles */
+.download-btn {
+  background: var(--accent-color);
+  color: #000;
+  font-family: monospace;
+  font-weight: bold;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.download-btn:hover {
+  background: #ff6b6b;
+  transform: translateY(-1px);
+}
+
+.download-btn:disabled {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
