@@ -29,18 +29,23 @@
         <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
           <a href="#" class="sidebar-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span class="sub-pixel-font">Dashboard</span>
           </a>
           <a href="#" class="sidebar-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span class="sub-pixel-font">New Scan</span>
           </a>
           <a href="#" class="sidebar-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             <span class="sub-pixel-font">Scan History</span>
           </a>
           <a href="#" class="sidebar-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             <span class="sub-pixel-font">Reports</span>
           </a>
           <a href="#" class="sidebar-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             <span class="sub-pixel-font">Settings</span>
           </a>
         </aside>
@@ -68,7 +73,7 @@
           </div>
 
           <!-- Section 1: Overview Statistics Cards -->
-          <div class="stats-grid">
+          <div class="stats-grid fade-in-up" style="animation-delay: 0.1s;">
             <div class="stat-card">
               <div class="stat-title sub-pixel-font">Total Scans</div>
               <div id="total-scans" class="stat-value">0</div>
@@ -90,14 +95,14 @@
           </div>
 
           <!-- Section 2: Quick Action Panel -->
-          <section class="action-panel">
+          <section class="action-panel fade-in-up" style="animation-delay: 0.2s;">
             <button class="btn-primary">Start New Scan</button>
           </section>
 
           <!-- Section 3: Recent Scan Activity Table -->
-          <section class="activity-section">
+          <section class="activity-section fade-in-up" style="animation-delay: 0.3s;">
             <h3
-              class="pixel-font"
+              class="pixel-font flex-header"
               style="font-size: 0.8rem; margin-bottom: 1.5rem"
             >
               Recent Scan Activity
@@ -123,12 +128,12 @@
           </section>
 
           <!-- Section 4: Active Scan Status Panel -->
-          <section class="status-panel">
+          <section class="status-panel fade-in-up" style="animation-delay: 0.4s;">
             <h3
-              class="pixel-font"
+              class="pixel-font flex-header"
               style="font-size: 0.8rem; margin-bottom: 1.5rem"
             >
-              Live Scan Status
+              Live Scan Status <span class="pulse-indicator"></span>
             </h3>
             <div id="live-scan-container">
               <p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>
