@@ -134,41 +134,79 @@ async function generatePDF(scanId, target) {
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(80, 80, 80);
 
+                const checkPageBreak = (spaceNeeded = 6) => {
+                    if (yPos + spaceNeeded > 280) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                };
+
                 if (r.type === 'nslookup') {
                     const ips = parsed.ip_addresses || [];
-                    doc.text(`Resolved IP Addresses:`, 25, yPos);
-                    yPos += 6;
-                    ips.forEach(ip => {
-                         doc.text(`- ${ip}`, 30, yPos);
-                         yPos += 6;
-                    });
+                    doc.text(`Resolved IP Addresses:`, 25, yPos); yPos += 6; checkPageBreak();
+                    ips.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    
+                    const aRec = parsed.A || [];
+                    if (aRec.length > 0) {
+                        doc.text(`A Records:`, 25, yPos); yPos += 6; checkPageBreak();
+                        aRec.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const aaaaRec = parsed.AAAA || [];
+                    if (aaaaRec.length > 0) {
+                        doc.text(`AAAA Records:`, 25, yPos); yPos += 6; checkPageBreak();
+                        aaaaRec.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const mxRec = parsed.MX || [];
+                    if (mxRec.length > 0) {
+                        doc.text(`Mail Servers (MX):`, 25, yPos); yPos += 6; checkPageBreak();
+                        mxRec.forEach(rec => { doc.text(`- ${rec}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const nsRec = parsed.NS || [];
+                    if (nsRec.length > 0) {
+                        doc.text(`Name Servers (NS):`, 25, yPos); yPos += 6; checkPageBreak();
+                        nsRec.forEach(rec => { doc.text(`- ${rec}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const txtRec = parsed.TXT || [];
+                    if (txtRec.length > 0) {
+                        doc.text(`TXT Records:`, 25, yPos); yPos += 6; checkPageBreak();
+                        txtRec.forEach(txt => { 
+                             const splitTxt = doc.splitTextToSize(`- ${txt}`, 150);
+                             checkPageBreak(splitTxt.length * 5);
+                             doc.text(splitTxt, 30, yPos); 
+                             yPos += 5 * splitTxt.length;
+                             yPos += 2;
+                        });
+                    }
                 } 
                 else if (r.type === 'whois') {
-                    doc.text(`Registrar: ${parsed.registrar || 'Unknown'}`, 25, yPos);
-                    yPos += 6;
-                    doc.text(`Creation Date: ${parsed.creation_date || 'Unknown'}`, 25, yPos);
-                    yPos += 6;
+                    const fields = ["Registrar", "Creation Date", "Expiry Date", "Updated Date", "Organization", "Email", "Phone", "Registrant Name"];
+                    fields.forEach(f => {
+                        doc.text(`${f}: ${parsed[f] || 'Unknown'}`, 25, yPos); yPos += 6; checkPageBreak();
+                    });
+                    
+                    const nsRec = parsed["Name Servers"] || [];
+                    if (nsRec.length > 0) {
+                        doc.text(`Name Servers:`, 25, yPos); yPos += 6; checkPageBreak();
+                        nsRec.forEach(ns => { doc.text(`- ${ns}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
                 }
                 else if (r.type === 'theHarvester') {
                     const emails = parsed.emails || [];
                     const subs = parsed.subdomains || [];
                     
-                    doc.text(`Discovered Emails (${emails.length}):`, 25, yPos);
-                    yPos += 6;
-                    emails.forEach(e => { doc.text(`- ${e}`, 30, yPos); yPos += 6; });
+                    doc.text(`Discovered Emails (${emails.length}):`, 25, yPos); yPos += 6; checkPageBreak();
+                    emails.forEach(e => { doc.text(`- ${e}`, 30, yPos); yPos += 6; checkPageBreak(); });
 
-                    doc.text(`Subdomains Discovered (${subs.length}):`, 25, yPos);
-                    yPos += 6;
-                    subs.forEach(s => { doc.text(`- ${s}`, 30, yPos); yPos += 6; });
+                    doc.text(`Subdomains Discovered (${subs.length}):`, 25, yPos); yPos += 6; checkPageBreak();
+                    subs.forEach(s => { doc.text(`- ${s}`, 30, yPos); yPos += 6; checkPageBreak(); });
                 }
 
                 yPos += 10;
-                
-                // Add new page if content is too long
-                if (yPos > 270) {
-                    doc.addPage();
-                    yPos = 20;
-                }
+                checkPageBreak();
             });
         }
 

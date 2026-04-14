@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexaHire — Sign In</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!--
+    NexaHire Auth Module v2.1.4
+    Endpoint: /.netlify/functions/login
+    Method: POST  |  Content-Type: application/json
+    Body: { "username": "...", "password": "..." }
+
+    WARNING (sec-review 2024-03-01): unsafe filter flag is TRUE in this build.
+    The legacy query engine does NOT sanitise special characters.
+    Ticket NH-204 is still open. Do not expose this page externally.
+  -->
+</head>
+<body class="login-page">
+
+<!-- ── Nav ─────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class='nav-logo' href='/' style='text-decoration:none;'>Nexa<span>Hire</span></a>
+    <div class="nav-links">
+      <a class='nav-link' href='/'>← Back to Jobs</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Login body ───────────────────────────────────── -->
+<div class="login-body">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="login-logo-mark">💼</div>
+      <h1>Employer Portal</h1>
+      <p>Sign in to manage listings &amp; applications</p>
+    </div>
+
+    <hr class="divider" />
+
+    <form id="login-form" autocomplete="off" novalidate>
+
+      <div class="field">
+        <label for="username">Username</label>
+        <div class="field-wrap">
+          <input type="text" id="username" name="username"
+                 placeholder="your username" spellcheck="false" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">
+          Password
+          <a href="#" class="forgot">Forgot password?</a>
+        </label>
+        <div class="field-wrap">
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••••" />
+        </div>
+        <!-- dev note: input passed directly to query engine — NH-204 still open -->
+        <div class="field-hint">Contact your administrator if you have trouble signing in.</div>
+      </div>
+
+      <button type="submit" class="btn-login" id="login-btn">Sign in</button>
+
+    </form>
+
+    <!-- Alert boxes -->
+    <div class="alert alert-success" id="alert-success"></div>
+    <div class="alert alert-error"   id="alert-error"></div>
+    <div class="alert alert-warn"    id="alert-warn"></div>
+
+    <!-- Server response (populated on admin access) -->
+    <div class="data-box" id="data-box"></div>
+
+    <p class="register-link">
+      Looking for jobs? <a href='/'>Browse openings →</a>
+    </p>
+
+  </div>
+</div>
+
+<!-- ── Footer ───────────────────────────────────────── -->
+<footer class="footer">
+  <p>© 2024 NexaHire Technologies &nbsp;·&nbsp;
+     <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
+  </p>
+</footer>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

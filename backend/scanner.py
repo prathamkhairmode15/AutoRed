@@ -1,6 +1,9 @@
 import asyncio
 import json
 import re
+import threading
+import queue
+import subprocess
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import Scan, ScanResult, AsyncSessionLocal
 
@@ -21,10 +24,6 @@ def is_valid_target(target: str) -> bool:
     if re.match(r'^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$', target):
         return True
     return False
-
-import threading
-import queue
-import subprocess
 
 async def run_command_and_stream_output(cmd_args, prefix=""):
     """
@@ -71,64 +70,125 @@ async def run_command_and_stream_output(cmd_args, prefix=""):
     yield (False, "\n".join(full_output))
 
 def parse_nslookup(output: str) -> dict:
-    ip_addresses = []
-    lines = output.split('\n')
-    parsing_answers = False
+    parsed_data = {
+        "A": [],
+        "AAAA": [],
+        "MX": [],
+        "NS": [],
+        "TXT": [],
+        "ip_addresses": []
+    }
     
-    for line in lines:
-        if "Name:" in line or "Non-authoritative answer:" in line:
-            parsing_answers = True
+    if not output:
+        return parsed_data
         
-        # When parsing addresses after Name:
-        if "Address:" in line:
+    for line in output.split('\n'):
+        line = line.strip()
+        
+        # A / IPv4
+        match_a = re.search(r'internet address = ([0-9\.]+)', line)
+        if match_a:
+            ip = match_a.group(1)
+            parsed_data["A"].append(ip)
+            parsed_data["ip_addresses"].append(ip)
+            
+        # AAAA / IPv6
+        match_aaaa = re.search(r'AAAA IPv6 address = ([0-9a-fA-F:]+)', line)
+        if match_aaaa:
+            ip = match_aaaa.group(1)
+            parsed_data["AAAA"].append(ip)
+            parsed_data["ip_addresses"].append(ip)
+            
+        # MX
+        match_mx = re.search(r'mail exchanger = (.*)', line, re.IGNORECASE)
+        if match_mx:
+            parsed_data["MX"].append(match_mx.group(1).strip())
+            
+        # NS
+        match_ns = re.search(r'(?:primary )?name server = (.*)', line, re.IGNORECASE)
+        if match_ns:
+            parsed_data["NS"].append(match_ns.group(1).strip())
+        
+        # TXT
+        match_txt = re.search(r'text = (.*)', line, re.IGNORECASE)
+        if match_txt:
+            parsed_data["TXT"].append(match_txt.group(1).strip())
+            
+        # Address: fallback
+        if line.startswith("Address:"):
             parts = line.split("Address:")
             if len(parts) > 1:
-                ip_addresses.append(parts[1].strip())
-        elif "Addresses:" in line:
-            parts = line.split("Addresses:")
-            if len(parts) > 1:
-                ip_addresses.append(parts[1].strip())
-        elif parsing_answers and re.match(r'^\s*([0-9]{1,3}\.){3}[0-9]{1,3}\s*$', line):
-            ip_addresses.append(line.strip())
-            
-    # Simple deduplication
-    ip_addresses = list(set([ip for ip in ip_addresses if not '192.168' in ip and not '127.0.0.1' in ip and not '::' in ip]))
-    return {"ip_addresses": ip_addresses}
+                ip = parts[1].strip()
+                if re.match(r'^[0-9\.]+$', ip):
+                    parsed_data["ip_addresses"].append(ip)
+                    
+    # Deduplicate
+    for key in parsed_data:
+        parsed_data[key] = list(set([item for item in parsed_data[key] if item]))
+        
+    return parsed_data
 
 def parse_whois(output: str) -> dict:
-    registrar = None
-    creation_date = None
-    
-    for line in output.split('\n'):
-        lower_line = line.lower()
-        if ("registrar:" in lower_line or "registrar name:" in lower_line) and not registrar:
-            parts = line.split(":")
-            if len(parts) > 1:
-                registrar = parts[1].strip()
-        elif ("creation date:" in lower_line or "created:" in lower_line) and not creation_date:
-            parts = line.split(":")
-            if len(parts) > 1:
-                creation_date = parts[1].strip()
-                
-    return {
-        "registrar": registrar or "Unknown",
-        "creation_date": creation_date or "Unknown"
+    parsed_data = {
+        "Registrar": "Unknown",
+        "Creation Date": "Unknown",
+        "Expiry Date": "Unknown",
+        "Updated Date": "Unknown",
+        "Organization": "Unknown",
+        "Email": "Unknown",
+        "Phone": "Unknown",
+        "Registrant Name": "Unknown",
+        "Name Servers": []
     }
+    
+    if not output:
+        return parsed_data
+        
+    for line in output.split('\n'):
+        line = line.strip()
+        lower_line = line.lower()
+        
+        if lower_line.startswith("registrar:") and parsed_data["Registrar"] == "Unknown":
+            parsed_data["Registrar"] = line.split(":", 1)[1].strip()
+        elif (lower_line.startswith("creation date:") or lower_line.startswith("created date:")) and parsed_data["Creation Date"] == "Unknown":
+            parsed_data["Creation Date"] = line.split(":", 1)[1].strip()
+        elif (lower_line.startswith("registry expiry date:") or lower_line.startswith("registrar registration expiration date:")) and parsed_data["Expiry Date"] == "Unknown":
+            parsed_data["Expiry Date"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("updated date:") and parsed_data["Updated Date"] == "Unknown":
+            parsed_data["Updated Date"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("registrant organization:") and parsed_data["Organization"] == "Unknown":
+            parsed_data["Organization"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("registrant email:") and parsed_data["Email"] == "Unknown":
+            parsed_data["Email"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("registrant phone:") and parsed_data["Phone"] == "Unknown":
+            parsed_data["Phone"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("registrant name:") and parsed_data["Registrant Name"] == "Unknown":
+            parsed_data["Registrant Name"] = line.split(":", 1)[1].strip()
+        elif lower_line.startswith("name server:"):
+            ns = line.split(":", 1)[1].strip()
+            if ns:
+                parsed_data["Name Servers"].append(ns)
+                
+    parsed_data["Name Servers"] = list(set(parsed_data["Name Servers"]))
+    return parsed_data
 
 def parse_theharvester(output: str) -> dict:
     emails = []
     subdomains = []
     
+    if not output:
+        return {"emails": emails, "subdomains": subdomains}
+        
     lines = output.split('\n')
     parsing_emails = False
     parsing_hosts = False
     
     for line in lines:
-        if "--- Emails found ---" in line:
+        if "--- Emails found ---" in line or "[*] Emails found:" in line:
             parsing_emails = True
             parsing_hosts = False
             continue
-        if "--- Hosts found ---" in line:
+        if "--- Hosts found ---" in line or "[*] Hosts found:" in line:
             parsing_hosts = True
             parsing_emails = False
             continue
@@ -141,7 +201,7 @@ def parse_theharvester(output: str) -> dict:
             emails.append(line)
         elif parsing_hosts:
             host = line.split(":")[0].strip()
-            if host:
+            if host and host != "No hosts found":
                 subdomains.append(host)
                 
     return {
@@ -168,7 +228,7 @@ async def background_passive_scan(scan_id: int, target: str):
     append_log(f"Initializing scan for target: {target}\n")
     
     if not is_valid_target(target):
-        append_log(f"[error] Target is invalid. Prevented potential command injection.\n")
+        append_log("[error] Target is invalid. Prevented potential command injection.\n")
         async with AsyncSessionLocal() as db:
             scan = await db.get(Scan, scan_id)
             if scan:
@@ -186,7 +246,7 @@ async def background_passive_scan(scan_id: int, target: str):
         append_log("Starting nslookup...\n")
         nslookup_output = ""
         try:
-            async for is_line, content in run_command_and_stream_output(["nslookup", target], "nslookup"):
+            async for is_line, content in run_command_and_stream_output(["nslookup", "-debug", target], "nslookup"):
                 if is_line:
                     append_log(content.replace("data: ", "") + "\n")
                 else:
@@ -219,7 +279,7 @@ async def background_passive_scan(scan_id: int, target: str):
         theharvester_output = ""
         try:
             async for is_line, content in run_command_and_stream_output(
-                ["theHarvester", "-d", target, "-l", "50", "-b", "all"], "theHarvester"
+                ["theHarvester", "-d", target, "-l", "200", "-b", "crtsh"], "theHarvester"
             ):
                 if is_line:
                     append_log(content.replace("data: ", "") + "\n")
@@ -253,7 +313,7 @@ async def stream_passive_scan(scan_id: int):
     """
     session = ACTIVE_SCANS.get(scan_id)
     if not session:
-        yield f"data: Scan not found or already completed.\n\n"
+        yield "data: Scan not found or already completed.\n\n"
         yield f"event: end\ndata: {json.dumps({'status': 'completed'})}\n\n"
         return
         
