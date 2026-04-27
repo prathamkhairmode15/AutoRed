@@ -138,3 +138,27 @@
   content: "> ";
   color: var(--accent-color);
 }
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-family: monospace;
+}
+
+.label {
+  color: var(--accent-color);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+.text-muted {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+

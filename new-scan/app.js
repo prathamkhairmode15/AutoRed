@@ -168,13 +168,24 @@ async function fetchAndDisplayResults(scanId, token) {
 
         if (r.type === 'nslookup') {
             const ips = parsed.ip_addresses || [];
+            const mx = parsed.mx_records || [];
+            const ns = parsed.ns_records || [];
+            
             if (ips.length === 0) document.getElementById("res-ips").innerHTML = "<li>No IPs resolved</li>";
-            else ips.forEach(ip => document.getElementById("res-ips").innerHTML += `<li>${ip}</li>`);
+            else {
+                ips.forEach(ip => document.getElementById("res-ips").innerHTML += `<li><span class='text-accent'>IP:</span> ${ip}</li>`);
+                if (mx.length > 0) mx.forEach(m => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>MX:</span> ${m}</li>`);
+                if (ns.length > 0) ns.forEach(n => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>NS:</span> ${n}</li>`);
+            }
         }
         else if (r.type === 'whois') {
             document.getElementById("res-whois").innerHTML = `
-                <div>Registrar: ${parsed.registrar || 'N/A'}</div>
-                <div>Created: ${parsed.creation_date || 'N/A'}</div>
+                <div class="data-item"><span class="label">Registrar:</span> ${parsed.registrar || 'N/A'}</div>
+                <div class="data-item"><span class="label">Created:</span> ${parsed.creation_date || 'N/A'}</div>
+                <div class="data-item"><span class="label">Expires:</span> ${parsed.expiry_date || 'N/A'}</div>
+                <div class="data-item"><span class="label">Organization:</span> ${parsed.organization || 'N/A'}</div>
+                <div class="data-item"><span class="label">Owner:</span> ${parsed.registrant_name || 'N/A'}</div>
+                <div class="data-item"><span class="label">Email:</span> ${parsed.email || 'N/A'}</div>
             `;
         }
         else if (r.type === 'theHarvester') {

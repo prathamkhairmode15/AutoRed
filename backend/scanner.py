@@ -71,56 +71,67 @@ async def run_command_and_stream_output(cmd_args, prefix=""):
 
 def parse_nslookup(output: str) -> dict:
     parsed_data = {
-        "A": [],
-        "AAAA": [],
-        "MX": [],
-        "NS": [],
-        "TXT": [],
+        "a_records": [],
+        "aaaa_records": [],
+        "mx_records": [],
+        "ns_records": [],
+        "txt_records": [],
         "ip_addresses": []
     }
     
     if not output:
         return parsed_data
         
-    for line in output.split('\n'):
+    lines = output.split('\n')
+    for i, line in enumerate(lines):
         line = line.strip()
         
         # A / IPv4
-        match_a = re.search(r'internet address = ([0-9\.]+)', line)
+        match_a = re.search(r'internet address\s*=\s*([0-9\.]+)', line, re.IGNORECASE)
         if match_a:
             ip = match_a.group(1)
-            parsed_data["A"].append(ip)
+            parsed_data["a_records"].append(ip)
             parsed_data["ip_addresses"].append(ip)
             
         # AAAA / IPv6
-        match_aaaa = re.search(r'AAAA IPv6 address = ([0-9a-fA-F:]+)', line)
+        match_aaaa = re.search(r'AAAA IPv6 address\s*=\s*([0-9a-fA-F:]+)', line, re.IGNORECASE)
         if match_aaaa:
             ip = match_aaaa.group(1)
-            parsed_data["AAAA"].append(ip)
+            parsed_data["aaaa_records"].append(ip)
             parsed_data["ip_addresses"].append(ip)
             
         # MX
-        match_mx = re.search(r'mail exchanger = (.*)', line, re.IGNORECASE)
+        match_mx = re.search(r'mail exchanger\s*=\s*(.*)', line, re.IGNORECASE)
         if match_mx:
-            parsed_data["MX"].append(match_mx.group(1).strip())
+            parsed_data["mx_records"].append(match_mx.group(1).strip())
             
         # NS
-        match_ns = re.search(r'(?:primary )?name server = (.*)', line, re.IGNORECASE)
+        match_ns = re.search(r'(?:primary )?name server\s*=\s*(.*)', line, re.IGNORECASE)
         if match_ns:
-            parsed_data["NS"].append(match_ns.group(1).strip())
+            parsed_data["ns_records"].append(match_ns.group(1).strip())
         
         # TXT
-        match_txt = re.search(r'text = (.*)', line, re.IGNORECASE)
+        match_txt = re.search(r'text\s*=\s*(.*)', line, re.IGNORECASE)
         if match_txt:
-            parsed_data["TXT"].append(match_txt.group(1).strip())
+            parsed_data["txt_records"].append(match_txt.group(1).strip())
             
+        # Addresses: (plural) - handles multi-IP results elegantly
+        if line.lower().startswith("addresses:"):
+            first_addr = line.split(":", 1)[1].strip()
+            if first_addr:
+                parsed_data["ip_addresses"].append(first_addr)
+            j = i + 1
+            while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("\t")):
+                addr = lines[j].strip()
+                if addr:
+                    parsed_data["ip_addresses"].append(addr)
+                j += 1
+        
         # Address: fallback
-        if line.startswith("Address:"):
-            parts = line.split("Address:")
-            if len(parts) > 1:
-                ip = parts[1].strip()
-                if re.match(r'^[0-9\.]+$', ip):
-                    parsed_data["ip_addresses"].append(ip)
+        elif line.lower().startswith("address:"):
+            addr = line.split(":", 1)[1].strip()
+            if addr and addr not in parsed_data["ip_addresses"]:
+                parsed_data["ip_addresses"].append(addr)
                     
     # Deduplicate
     for key in parsed_data:
@@ -130,46 +141,46 @@ def parse_nslookup(output: str) -> dict:
 
 def parse_whois(output: str) -> dict:
     parsed_data = {
-        "Registrar": "Unknown",
-        "Creation Date": "Unknown",
-        "Expiry Date": "Unknown",
-        "Updated Date": "Unknown",
-        "Organization": "Unknown",
-        "Email": "Unknown",
-        "Phone": "Unknown",
-        "Registrant Name": "Unknown",
-        "Name Servers": []
+        "registrar": "Unknown",
+        "creation_date": "Unknown",
+        "expiry_date": "Unknown",
+        "updated_date": "Unknown",
+        "organization": "Unknown",
+        "email": "Unknown",
+        "phone": "Unknown",
+        "registrant_name": "Unknown",
+        "name_servers": []
     }
     
     if not output:
         return parsed_data
         
-    for line in output.split('\n'):
-        line = line.strip()
-        lower_line = line.lower()
-        
-        if lower_line.startswith("registrar:") and parsed_data["Registrar"] == "Unknown":
-            parsed_data["Registrar"] = line.split(":", 1)[1].strip()
-        elif (lower_line.startswith("creation date:") or lower_line.startswith("created date:")) and parsed_data["Creation Date"] == "Unknown":
-            parsed_data["Creation Date"] = line.split(":", 1)[1].strip()
-        elif (lower_line.startswith("registry expiry date:") or lower_line.startswith("registrar registration expiration date:")) and parsed_data["Expiry Date"] == "Unknown":
-            parsed_data["Expiry Date"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("updated date:") and parsed_data["Updated Date"] == "Unknown":
-            parsed_data["Updated Date"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("registrant organization:") and parsed_data["Organization"] == "Unknown":
-            parsed_data["Organization"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("registrant email:") and parsed_data["Email"] == "Unknown":
-            parsed_data["Email"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("registrant phone:") and parsed_data["Phone"] == "Unknown":
-            parsed_data["Phone"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("registrant name:") and parsed_data["Registrant Name"] == "Unknown":
-            parsed_data["Registrant Name"] = line.split(":", 1)[1].strip()
-        elif lower_line.startswith("name server:"):
-            ns = line.split(":", 1)[1].strip()
-            if ns:
-                parsed_data["Name Servers"].append(ns)
+    patterns = {
+        "registrar": r'Registrar:\s*(.*)',
+        "creation_date": r'Creation Date:\s*(.*)',
+        "expiry_date": r'(?:Registry Expiry Date|Registrar Registration Expiration Date):\s*(.*)',
+        "updated_date": r'Updated Date:\s*(.*)',
+        "organization": r'Registrant Organization:\s*(.*)',
+        "email": r'Registrant Email:\s*(.*)',
+        "phone": r'Registrant Phone:\s*(.*)',
+        "registrant_name": r'Registrant Name:\s*(.*)',
+    }
+    
+    for key, pattern in patterns.items():
+        match = re.search(pattern, output, re.IGNORECASE)
+        if match:
+            value = match.group(1).strip()
+            if value and value.lower() != "not available":
+                parsed_data[key] = value
+            
+    # Name Servers
+    ns_matches = re.finditer(r'Name Server:\s*(.*)', output, re.IGNORECASE)
+    for m in ns_matches:
+        ns = m.group(1).strip()
+        if ns:
+            parsed_data["name_servers"].append(ns)
                 
-    parsed_data["Name Servers"] = list(set(parsed_data["Name Servers"]))
+    parsed_data["name_servers"] = list(set(parsed_data["name_servers"]))
     return parsed_data
 
 def parse_theharvester(output: str) -> dict:
@@ -184,25 +195,29 @@ def parse_theharvester(output: str) -> dict:
     parsing_hosts = False
     
     for line in lines:
-        if "--- Emails found ---" in line or "[*] Emails found:" in line:
+        lower_line = line.lower()
+        if "emails found" in lower_line:
             parsing_emails = True
             parsing_hosts = False
             continue
-        if "--- Hosts found ---" in line or "[*] Hosts found:" in line:
+        if "hosts found" in lower_line:
             parsing_hosts = True
             parsing_emails = False
             continue
             
         line = line.strip()
-        if not line or "---" in line:
+        if not line or "---" in line or line.startswith("[*]"):
             continue
             
         if parsing_emails and "@" in line:
             emails.append(line)
         elif parsing_hosts:
+            # Handle formats like "host:ip" or just "host"
             host = line.split(":")[0].strip()
-            if host and host != "No hosts found":
-                subdomains.append(host)
+            if host and host.lower() != "no hosts found":
+                # Basic domain validation
+                if "." in host:
+                    subdomains.append(host)
                 
     return {
         "emails": list(set(emails)),
