@@ -224,6 +224,34 @@ def parse_theharvester(output: str) -> dict:
         "subdomains": list(set(subdomains))
     }
 
+def parse_nmap(output: str) -> dict:
+    ports = []
+    if not output:
+        return {"ports": ports}
+        
+    lines = output.split('\n')
+    for line in lines:
+        line = line.strip()
+        if not line or not line[0].isdigit():
+            continue
+            
+        match = re.match(r'^(\d+/\w+)\s+(\w+)\s+([^\s]+)\s*(.*)', line)
+        if match:
+            port_proto = match.group(1)
+            state = match.group(2)
+            service = match.group(3)
+            version = match.group(4).strip()
+            
+            ports.append({
+                "port": port_proto,
+                "state": state,
+                "service": service,
+                "version": version if version else "Unknown"
+            })
+            
+    return {"ports": list(ports)}
+
+
 async def background_passive_scan(scan_id: int, target: str):
     """
     Executes passive scanning tools in the background, parses results, and outputs logs to memory for SSE.
@@ -306,6 +334,25 @@ async def background_passive_scan(scan_id: int, target: str):
             await db.commit()
         except Exception as e:
             append_log(f"[error] theHarvester failed: {repr(e)}\n")
+
+        # Tool 4: Nmap
+        append_log("Starting nmap port scan...\n")
+        nmap_output = ""
+        try:
+            # -sV: Service/Version detection, -F: Fast scan (top 100 ports)
+            async for is_line, content in run_command_and_stream_output(
+                ["nmap", "-sV", "-F", target], "nmap"
+            ):
+                if is_line:
+                    append_log(content.replace("data: ", "") + "\n")
+                else:
+                    nmap_output = content
+                    
+            nmap_parsed = parse_nmap(nmap_output)
+            db.add(ScanResult(scan_id=scan_id, type="nmap", raw_output=nmap_output, parsed_data=nmap_parsed))
+            await db.commit()
+        except Exception as e:
+            append_log(f"[error] nmap failed: {repr(e)}\n")
 
         # Mark scan as completed
         scan = await db.get(Scan, scan_id)

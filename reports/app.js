@@ -146,31 +146,31 @@ async function generatePDF(scanId, target) {
                     doc.text(`Resolved IP Addresses:`, 25, yPos); yPos += 6; checkPageBreak();
                     ips.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
                     
-                    const aRec = parsed.A || [];
+                    const aRec = parsed.a_records || [];
                     if (aRec.length > 0) {
                         doc.text(`A Records:`, 25, yPos); yPos += 6; checkPageBreak();
                         aRec.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
                     }
                     
-                    const aaaaRec = parsed.AAAA || [];
+                    const aaaaRec = parsed.aaaa_records || [];
                     if (aaaaRec.length > 0) {
                         doc.text(`AAAA Records:`, 25, yPos); yPos += 6; checkPageBreak();
                         aaaaRec.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
                     }
                     
-                    const mxRec = parsed.MX || [];
+                    const mxRec = parsed.mx_records || [];
                     if (mxRec.length > 0) {
                         doc.text(`Mail Servers (MX):`, 25, yPos); yPos += 6; checkPageBreak();
                         mxRec.forEach(rec => { doc.text(`- ${rec}`, 30, yPos); yPos += 6; checkPageBreak(); });
                     }
                     
-                    const nsRec = parsed.NS || [];
+                    const nsRec = parsed.ns_records || [];
                     if (nsRec.length > 0) {
                         doc.text(`Name Servers (NS):`, 25, yPos); yPos += 6; checkPageBreak();
                         nsRec.forEach(rec => { doc.text(`- ${rec}`, 30, yPos); yPos += 6; checkPageBreak(); });
                     }
                     
-                    const txtRec = parsed.TXT || [];
+                    const txtRec = parsed.txt_records || [];
                     if (txtRec.length > 0) {
                         doc.text(`TXT Records:`, 25, yPos); yPos += 6; checkPageBreak();
                         txtRec.forEach(txt => { 
@@ -183,12 +183,21 @@ async function generatePDF(scanId, target) {
                     }
                 } 
                 else if (r.type === 'whois') {
-                    const fields = ["Registrar", "Creation Date", "Expiry Date", "Updated Date", "Organization", "Email", "Phone", "Registrant Name"];
+                    const fields = [
+                        { label: "Registrar", key: "registrar" },
+                        { label: "Creation Date", key: "creation_date" },
+                        { label: "Expiry Date", key: "expiry_date" },
+                        { label: "Updated Date", key: "updated_date" },
+                        { label: "Organization", key: "organization" },
+                        { label: "Email", key: "email" },
+                        { label: "Phone", key: "phone" },
+                        { label: "Registrant Name", key: "registrant_name" }
+                    ];
                     fields.forEach(f => {
-                        doc.text(`${f}: ${parsed[f] || 'Unknown'}`, 25, yPos); yPos += 6; checkPageBreak();
+                        doc.text(`${f.label}: ${parsed[f.key] || 'Unknown'}`, 25, yPos); yPos += 6; checkPageBreak();
                     });
                     
-                    const nsRec = parsed["Name Servers"] || [];
+                    const nsRec = parsed.name_servers || [];
                     if (nsRec.length > 0) {
                         doc.text(`Name Servers:`, 25, yPos); yPos += 6; checkPageBreak();
                         nsRec.forEach(ns => { doc.text(`- ${ns}`, 30, yPos); yPos += 6; checkPageBreak(); });
@@ -200,9 +209,21 @@ async function generatePDF(scanId, target) {
                     
                     doc.text(`Discovered Emails (${emails.length}):`, 25, yPos); yPos += 6; checkPageBreak();
                     emails.forEach(e => { doc.text(`- ${e}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    yPos += 4; checkPageBreak();
 
                     doc.text(`Subdomains Discovered (${subs.length}):`, 25, yPos); yPos += 6; checkPageBreak();
                     subs.forEach(s => { doc.text(`- ${s}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                }
+                else if (r.type === 'nmap') {
+                    const ports = parsed.ports || [];
+                    doc.text(`Open Ports & Services Found:`, 25, yPos); yPos += 6; checkPageBreak();
+                    if (ports.length === 0) {
+                        doc.text(`- No open ports discovered in fast scan.`, 30, yPos); yPos += 6; checkPageBreak();
+                    } else {
+                        ports.forEach(p => {
+                            doc.text(`- ${p.port} (${p.service}): ${p.version}`, 30, yPos); yPos += 6; checkPageBreak();
+                        });
+                    }
                 }
 
                 yPos += 10;
