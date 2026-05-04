@@ -29,6 +29,7 @@ onAuthStateChanged(auth, async (user) => {
 logoutBtn.addEventListener('click', async () => {
   try {
     await signOut(auth);
+    window.location.replace('../index.html');
   } catch (error) {
     console.error("Logout failed", error);
   }
@@ -157,10 +158,18 @@ async function fetchAndDisplayResults(scanId, token) {
   const data = await res.json();
   const results = data.results;
 
-  document.getElementById("res-ips").innerHTML = "";
-  document.getElementById("res-whois").innerHTML = "";
-  document.getElementById("res-emails").innerHTML = "";
-  document.getElementById("res-subdomains").innerHTML = "";
+  // Clear previous results and ensure they are visible for population
+  const resetCard = (id) => {
+    const el = document.getElementById(id);
+    el.innerHTML = "";
+    el.parentElement.classList.remove("hidden");
+  };
+
+  resetCard("res-ips");
+  resetCard("res-whois");
+  resetCard("res-emails");
+  resetCard("res-subdomains");
+  resetCard("res-ports");
 
   results.forEach(r => {
     const parsed = r.parsed_data;
@@ -170,53 +179,74 @@ async function fetchAndDisplayResults(scanId, token) {
       const ips = parsed.ip_addresses || [];
       const mx = parsed.mx_records || [];
       const ns = parsed.ns_records || [];
+      const names = parsed.names || [];
+      const servers = parsed.servers || [];
+      const aliases = parsed.aliases || [];
 
-      if (ips.length === 0) document.getElementById("res-ips").innerHTML = "<li>No IPs resolved</li>";
-      else {
-        ips.forEach(ip => document.getElementById("res-ips").innerHTML += `<li><span class='text-accent'>IP:</span> ${ip}</li>`);
-        if (mx.length > 0) mx.forEach(m => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>MX:</span> ${m}</li>`);
-        if (ns.length > 0) ns.forEach(n => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>NS:</span> ${n}</li>`);
-      }
+      names.forEach(name => document.getElementById("res-ips").innerHTML += `<li><span class='text-accent'>Name:</span> ${name}</li>`);
+      ips.forEach(ip => document.getElementById("res-ips").innerHTML += `<li><span class='text-accent'>IP:</span> ${ip}</li>`);
+      if (servers.length > 0) servers.forEach(s => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>Server:</span> ${s}</li>`);
+      if (aliases.length > 0) aliases.forEach(a => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>Alias:</span> ${a}</li>`);
+      if (mx.length > 0) mx.forEach(m => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>MX:</span> ${m}</li>`);
+      if (ns.length > 0) ns.forEach(n => document.getElementById("res-ips").innerHTML += `<li><span class='text-muted'>NS:</span> ${n}</li>`);
     }
     else if (r.type === 'whois') {
-      document.getElementById("res-whois").innerHTML = `
-                <div class="data-item"><span class="label">Registrar:</span> ${parsed.registrar || 'N/A'}</div>
-                <div class="data-item"><span class="label">Created:</span> ${parsed.creation_date || 'N/A'}</div>
-                <div class="data-item"><span class="label">Expires:</span> ${parsed.expiry_date || 'N/A'}</div>
-                <div class="data-item"><span class="label">Organization:</span> ${parsed.organization || 'N/A'}</div>
-                <div class="data-item"><span class="label">Owner:</span> ${parsed.registrant_name || 'N/A'}</div>
-                <div class="data-item"><span class="label">Email:</span> ${parsed.email || 'N/A'}</div>
-            `;
+      // Only show whois if there's actual data beyond 'Unknown'
+      if (parsed.registrar && parsed.registrar !== 'Unknown') {
+        document.getElementById("res-whois").innerHTML = `
+                  <div class="data-item"><span class="label">Registrar:</span> ${parsed.registrar || 'N/A'}</div>
+                  <div class="data-item"><span class="label">Created:</span> ${parsed.creation_date || 'N/A'}</div>
+                  <div class="data-item"><span class="label">Expires:</span> ${parsed.expiry_date || 'N/A'}</div>
+                  <div class="data-item"><span class="label">Organization:</span> ${parsed.organization || 'N/A'}</div>
+                  <div class="data-item"><span class="label">Owner:</span> ${parsed.registrant_name || 'N/A'}</div>
+                  <div class="data-item"><span class="label">Email:</span> ${parsed.email || 'N/A'}</div>
+              `;
+      }
     }
     else if (r.type === 'theHarvester') {
       const emails = parsed.emails || [];
       const subs = parsed.subdomains || [];
-      if (emails.length === 0) document.getElementById("res-emails").innerHTML = "<li>No emails found</li>";
-      else emails.forEach(e => document.getElementById("res-emails").innerHTML += `<li>${e}</li>`);
-      if (subs.length === 0) document.getElementById("res-subdomains").innerHTML = "<li>No subdomains found</li>";
-      else subs.forEach(s => document.getElementById("res-subdomains").innerHTML += `<li>${s}</li>`);
+      emails.forEach(e => document.getElementById("res-emails").innerHTML += `<li>${e}</li>`);
+      subs.forEach(s => document.getElementById("res-subdomains").innerHTML += `<li>${s}</li>`);
     }
     else if (r.type === 'nmap') {
       const ports = parsed.ports || [];
-      if (ports.length === 0) document.getElementById("res-ports").innerHTML = "<li>No open ports found</li>";
-      else {
-        ports.forEach(p => {
-          document.getElementById("res-ports").innerHTML += `
-                        <li style="font-size: 0.85rem;">
-                            <span class="text-accent">${p.port}</span> | 
-                            <span class="text-muted">${p.service}</span>
-                            <div style="font-size: 0.75rem; margin-left:1.5rem; color: #555;">${p.version}</div>
-                        </li>`;
-        });
-      }
+      ports.forEach(p => {
+        let vulnHtml = '';
+        if (p.vulnerabilities && p.vulnerabilities.length > 0) {
+          vulnHtml = `<div style="font-size: 0.70rem; margin-left: 1.5rem; margin-top: 0.5rem; color: #ff6b6b; font-family: monospace;">
+              <strong>Vulnerabilities Found <span style="font-size: 0.6rem; color: #888;">(${p.vulnerabilities.length})</span>:</strong>
+              <div style="max-height: 200px; overflow-y: auto; margin-top: 0.4rem; padding-right: 5px; border: 1px solid rgba(255,107,107,0.2); border-radius: 4px; background: rgba(0,0,0,0.2);">
+                <ul style="padding-left: 0.5rem; margin: 0.5rem 0; list-style-type: none;">
+                  ${p.vulnerabilities.map(v => `<li style="margin-bottom: 0.3rem; padding-bottom: 0.3rem; border-bottom: 1px dashed rgba(255,107,107,0.1); word-break: break-word;">${v.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</li>`).join('')}
+                </ul>
+              </div>
+          </div>`;
+        }
+        document.getElementById("res-ports").innerHTML += `
+                      <li style="font-size: 0.85rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                          <span class="text-accent">${p.port}</span> | 
+                          <span class="text-muted">${p.service}</span>
+                          <div style="font-size: 0.75rem; margin-left:1.5rem; color: #888;">${p.version}</div>
+                          ${vulnHtml}
+                      </li>`;
+      });
     }
   });
 
-  document.getElementById("res-ips").innerHTML = document.getElementById("res-ips").innerHTML || "<li>No IPs resolved</li>";
-  document.getElementById("res-whois").innerHTML = document.getElementById("res-whois").innerHTML || "<div>No WHOIS data</div>";
-  document.getElementById("res-emails").innerHTML = document.getElementById("res-emails").innerHTML || "<li>No emails found</li>";
-  document.getElementById("res-subdomains").innerHTML = document.getElementById("res-subdomains").innerHTML || "<li>No subdomains found</li>";
-  document.getElementById("res-ports").innerHTML = document.getElementById("res-ports").innerHTML || "<li>No open ports found</li>";
+  // Hide any cards that have no content
+  const checkAndHide = (id) => {
+    const el = document.getElementById(id);
+    if (!el.innerHTML.trim()) {
+      el.parentElement.classList.add("hidden");
+    }
+  };
+
+  checkAndHide("res-ips");
+  checkAndHide("res-whois");
+  checkAndHide("res-emails");
+  checkAndHide("res-subdomains");
+  checkAndHide("res-ports");
 
   resultsSection.classList.remove("hidden");
 }

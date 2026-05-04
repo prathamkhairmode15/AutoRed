@@ -22,6 +22,7 @@ onAuthStateChanged(auth, async (user) => {
 
 logoutBtn.addEventListener('click', async () => {
     await signOut(auth);
+    window.location.replace('../index.html');
 });
 
 themeToggle.addEventListener("click", () => {
@@ -33,6 +34,17 @@ themeToggle.addEventListener("click", () => {
 });
 themeToggle.textContent = `THEME: ${(document.documentElement.getAttribute("data-theme") || "dark").toUpperCase()}`;
 
+let allCompletedScans = [];
+const searchInput = document.getElementById("search-input");
+
+searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase().trim();
+    const filtered = query
+        ? allCompletedScans.filter(s => s.target.toLowerCase().includes(query))
+        : allCompletedScans;
+    renderReports(filtered);
+});
+
 async function fetchReports() {
     try {
         const res = await fetch(`${API_BASE_URL}/scans`, {
@@ -40,47 +52,51 @@ async function fetchReports() {
         });
         if (!res.ok) throw new Error("Failed to fetch reports");
 
-        const scans = await res.json();
-        const completedScans = scans.filter(s => s.status === 'completed');
-        
-        if (completedScans.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem;">No completed scans available for report generation.</td></tr>';
-            return;
-        }
-
-        tableBody.innerHTML = completedScans.map(scan => `
-            <tr>
-              <td>${scan.target}</td>
-              <td style="color: var(--accent-color)">COMPLETED</td>
-              <td>${scan.created_at ? new Date(scan.created_at).toLocaleString() : 'N/A'}</td>
-              <td>
-                <button class="download-btn" data-id="${scan.id}" data-target="${scan.target}">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                  Generate PDF
-                </button>
-              </td>
-            </tr>
-        `).join('');
-
-        document.querySelectorAll('.download-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const button = e.currentTarget;
-                const scanId = button.dataset.id;
-                const target = button.dataset.target;
-                
-                button.disabled = true;
-                button.innerHTML = 'Processing...';
-                
-                await generatePDF(scanId, target);
-                
-                button.disabled = false;
-                button.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Generate PDF`;
-            });
-        });
+        const data = await res.json();
+        const scans = data.scans || data;
+        allCompletedScans = scans.filter(s => s.status === 'completed');
+        renderReports(allCompletedScans);
 
     } catch (err) {
         tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff3b3b;">${err.message}</td></tr>`;
     }
+}
+
+function renderReports(completedScans) {
+    if (completedScans.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem;">No matching reports found.</td></tr>';
+        return;
+    }
+
+    tableBody.innerHTML = completedScans.map(scan => `
+        <tr>
+          <td>${scan.target}</td>
+          <td style="color: var(--accent-color)">COMPLETED</td>
+          <td>${scan.created_at ? new Date(scan.created_at).toLocaleString() : 'N/A'}</td>
+          <td>
+            <button class="download-btn" data-id="${scan.id}" data-target="${scan.target}">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Generate PDF
+            </button>
+          </td>
+        </tr>
+    `).join('');
+
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const button = e.currentTarget;
+            const scanId = button.dataset.id;
+            const target = button.dataset.target;
+            
+            button.disabled = true;
+            button.innerHTML = 'Processing...';
+            
+            await generatePDF(scanId, target);
+            
+            button.disabled = false;
+            button.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Generate PDF`;
+        });
+    });
 }
 
 async function generatePDF(scanId, target) {
@@ -142,9 +158,29 @@ async function generatePDF(scanId, target) {
                 };
 
                 if (r.type === 'nslookup') {
+                    const names = parsed.names || [];
+                    if (names.length > 0) {
+                        doc.text(`Resolved Names:`, 25, yPos); yPos += 6; checkPageBreak();
+                        names.forEach(name => { doc.text(`- ${name}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+
                     const ips = parsed.ip_addresses || [];
-                    doc.text(`Resolved IP Addresses:`, 25, yPos); yPos += 6; checkPageBreak();
-                    ips.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    if (ips.length > 0) {
+                        doc.text(`Resolved IP Addresses:`, 25, yPos); yPos += 6; checkPageBreak();
+                        ips.forEach(ip => { doc.text(`- ${ip}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const servers = parsed.servers || [];
+                    if (servers.length > 0) {
+                        doc.text(`DNS Servers:`, 25, yPos); yPos += 6; checkPageBreak();
+                        servers.forEach(s => { doc.text(`- ${s}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
+                    
+                    const aliases = parsed.aliases || [];
+                    if (aliases.length > 0) {
+                        doc.text(`Aliases:`, 25, yPos); yPos += 6; checkPageBreak();
+                        aliases.forEach(a => { doc.text(`- ${a}`, 30, yPos); yPos += 6; checkPageBreak(); });
+                    }
                     
                     const aRec = parsed.a_records || [];
                     if (aRec.length > 0) {

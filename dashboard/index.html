@@ -10,17 +10,18 @@
       const savedTheme = localStorage.getItem("theme") || "dark";
       document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   </head>
 
   <body>
     <div class="app-container">
       <!-- Top Navigation Bar -->
       <nav class="top-navbar">
-        <div class="nav-logo pixel-font">AutoRed <span>APT</span></div>
+        <div class="nav-logo pixel-font" style="font-size: 1.5rem;">AutoRed <span>APT</span></div>
         <div class="nav-user">
           <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
           <span id="user-display" class="sub-pixel-font">Authenticating...</span>
-          <button class="icon-btn" title="Settings">⚙</button>
+          <a href="../settings/index.html" class="icon-btn" title="Settings" style="text-decoration:none;">⚙</a>
           <button id="logout-btn" class="logout-link" title="Logout" style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: var(--text-secondary);">⏻</button>
         </div>
       </nav>
@@ -44,7 +45,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             <span class="sub-pixel-font">Reports</span>
           </a>
-          <a href="#" class="sidebar-item">
+          <a href="../settings/index.html" class="sidebar-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             <span class="sub-pixel-font">Settings</span>
           </a>
@@ -99,45 +100,72 @@
             <button class="btn-primary">Start New Scan</button>
           </section>
 
-          <!-- Section 3: Recent Scan Activity Table -->
-          <section class="activity-section fade-in-up" style="animation-delay: 0.3s;">
-            <h3
-              class="pixel-font flex-header"
-              style="font-size: 0.8rem; margin-bottom: 1.5rem"
-            >
-              Recent Scan Activity
-            </h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Target</th>
-                    <th>Scan Type</th>
-                    <th>Tools Used</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>View</th>
-                  </tr>
-                </thead>
-                <tbody id="scans-table-body">
-                  <!-- Data will be populated by JS -->
-                  <tr><td colspan="6" style="text-align:center; padding: 2rem;">Loading scan data...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <!-- Section 3: Analytics Grid (Table + Chart/Alerts side-by-side) -->
+          <div class="analytics-grid fade-in-up" style="animation-delay: 0.3s;">
+            <!-- LEFT: Recent Scan Activity Table -->
+            <div>
+              <section class="activity-section">
+                <h3 class="pixel-font flex-header" style="font-size: 0.8rem; margin-bottom: 1.5rem">
+                  Recent Scan Activity
+                </h3>
+                <div class="table-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Target</th>
+                        <th>Status</th>
+                        <th>Vulns</th>
+                        <th>Date</th>
+                        <th>View</th>
+                      </tr>
+                    </thead>
+                    <tbody id="scans-table-body">
+                      <tr><td colspan="5" style="text-align:center; padding: 2rem;">Loading scan data...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
 
-          <!-- Section 4: Active Scan Status Panel -->
-          <section class="status-panel fade-in-up" style="animation-delay: 0.4s;">
-            <h3
-              class="pixel-font flex-header"
-              style="font-size: 0.8rem; margin-bottom: 1.5rem"
-            >
-              Live Scan Status <span class="pulse-indicator"></span>
-            </h3>
-            <div id="live-scan-container">
-              <p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>
-          </section>
+              <!-- Live Scan Status (below table, same column) -->
+              <section class="status-panel" style="margin-top: 1.5rem;">
+                <h3 class="pixel-font flex-header" style="font-size: 0.8rem; margin-bottom: 1.5rem">
+                  Live Scan Status <span class="pulse-indicator"></span>
+                </h3>
+                <div id="live-scan-container">
+                  <p class="sub-pixel-font" style="color: var(--text-secondary)">No active scans running.</p>
+                </div>
+              </section>
+            </div>
+
+            <!-- RIGHT: Chart + Alerts stacked -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <!-- Severity Breakdown Chart -->
+              <div class="analytics-panel">
+                <h3 class="pixel-font flex-header">
+                  Vulnerability Severity <span style="font-size: 0.7rem; color: var(--accent-color); margin-left: 0.5rem;">[BREAKDOWN]</span>
+                </h3>
+                <div class="chart-container">
+                  <canvas id="severity-chart"></canvas>
+                </div>
+                <div class="severity-legend" id="severity-legend">
+                  <div class="legend-item"><span class="legend-dot" style="background:#ff3b3b;"></span> Critical <span class="legend-count" id="legend-critical">0</span></div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#ffa500;"></span> High <span class="legend-count" id="legend-high">0</span></div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#ffd700;"></span> Medium <span class="legend-count" id="legend-medium">0</span></div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#4caf50;"></span> Low <span class="legend-count" id="legend-low">0</span></div>
+                </div>
+              </div>
+
+              <!-- Actionable Alerts -->
+              <div class="analytics-panel">
+                <h3 class="pixel-font flex-header">
+                  Actionable Alerts <span style="font-size: 0.7rem; color: var(--accent-color); margin-left: 0.5rem;">[INTEL]</span>
+                </h3>
+                <div class="alerts-panel" id="alerts-panel">
+                  <p class="no-alerts">No alerts yet. Run a scan to generate intelligence.</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Modal for Live/Historical Terminal -->
           <div id="terminal-modal" class="modal hidden">
@@ -191,6 +219,7 @@
       logoutBtn.addEventListener('click', async () => {
         try {
           await signOut(auth);
+          window.location.replace('../index.html');
         } catch (error) {
           console.error("Logout failed", error);
         }
@@ -217,11 +246,13 @@
       updateToggleText(document.documentElement.getAttribute("data-theme"));
 
       // Dashboard Initialization
+      let severityChart = null;
+
       async function initializeDashboard() {
         await fetchScans();
-        // Poll every 3 seconds for real-time updates
+        // Poll every 5 seconds for real-time updates
         if (pollInterval) clearInterval(pollInterval);
-        pollInterval = setInterval(fetchScans, 3000);
+        pollInterval = setInterval(fetchScans, 5000);
       }
 
       async function fetchScans() {
@@ -235,21 +266,37 @@
           });
           if (!res.ok) return;
           
-          const scans = await res.json();
+          const data = await res.json();
+          const scans = data.scans || [];
+          const stats = data.stats || { critical: 0, high: 0, medium: 0, low: 0 };
           
           let activeScansCount = 0;
+          let totalVulns = 0;
           const uniqueTargets = new Set();
 
           scans.forEach(scan => {
             if (scan.status === 'running') activeScansCount++;
             uniqueTargets.add(scan.target);
+            totalVulns += (scan.vulnerabilities_count || 0);
           });
 
-          // Update Stats
+          // Update Stats Cards
           totalScansEl.textContent = scans.length.toString().padStart(2, '0');
           activeScansEl.textContent = activeScansCount.toString().padStart(2, '0');
           targetsTestedEl.textContent = uniqueTargets.size.toString().padStart(2, '0');
-          vulnerabilitiesEl.textContent = "00"; // Placeholder for future vuln scanner
+          vulnerabilitiesEl.textContent = totalVulns.toString().padStart(2, '0');
+
+          // Update Severity Chart
+          renderSeverityChart(stats);
+
+          // Update Legend
+          document.getElementById('legend-critical').textContent = stats.critical;
+          document.getElementById('legend-high').textContent = stats.high;
+          document.getElementById('legend-medium').textContent = stats.medium;
+          document.getElementById('legend-low').textContent = stats.low;
+
+          // Update Alerts
+          renderAlerts(scans, stats);
 
           renderTable(scans);
 
@@ -261,9 +308,101 @@
         }
       }
 
+      function renderSeverityChart(stats) {
+        const ctx = document.getElementById('severity-chart');
+        const chartData = [stats.critical, stats.high, stats.medium, stats.low];
+        const hasData = chartData.some(v => v > 0);
+
+        if (severityChart) {
+          severityChart.data.datasets[0].data = hasData ? chartData : [1];
+          severityChart.data.datasets[0].backgroundColor = hasData 
+            ? ['#ff3b3b', '#ffa500', '#ffd700', '#4caf50'] 
+            : ['#333'];
+          severityChart.update('none');
+          return;
+        }
+
+        severityChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: hasData ? ['Critical', 'High', 'Medium', 'Low'] : ['No Data'],
+            datasets: [{
+              data: hasData ? chartData : [1],
+              backgroundColor: hasData ? ['#ff3b3b', '#ffa500', '#ffd700', '#4caf50'] : ['#333'],
+              borderColor: 'transparent',
+              borderWidth: 0,
+              hoverOffset: 6,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '65%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                enabled: hasData,
+                backgroundColor: '#1a1a1a',
+                titleColor: '#fff',
+                bodyColor: '#ccc',
+                borderColor: '#333',
+                borderWidth: 1,
+                padding: 10,
+                displayColors: true,
+                callbacks: {
+                  label: function(context) {
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const pct = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+                    return ` ${context.label}: ${context.raw} (${pct}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function renderAlerts(scans, stats) {
+        const alertsPanel = document.getElementById('alerts-panel');
+        const alerts = [];
+        const total = stats.critical + stats.high + stats.medium + stats.low;
+
+        if (total === 0) {
+          alertsPanel.innerHTML = '<p class="no-alerts">No alerts yet. Run a scan to generate intelligence.</p>';
+          return;
+        }
+
+        if (stats.critical > 0) {
+          alerts.push({ severity: 'critical', text: `<strong>${stats.critical}</strong> critical vulnerabilities (CVSS ≥ 9.0) detected across your scans. Immediate remediation recommended.` });
+        }
+        if (stats.high > 0) {
+          alerts.push({ severity: 'high', text: `<strong>${stats.high}</strong> high severity vulnerabilities (CVSS 7.0-8.9) identified. Review and patch at earliest opportunity.` });
+        }
+        if (stats.medium > 0) {
+          alerts.push({ severity: 'medium', text: `<strong>${stats.medium}</strong> medium risk vulnerabilities (CVSS 4.0-6.9) found. Schedule for next patch cycle.` });
+        }
+        if (stats.low > 0) {
+          alerts.push({ severity: 'low', text: `<strong>${stats.low}</strong> low risk issues (CVSS < 4.0) detected. Monitor and review during maintenance.` });
+        }
+
+        // Add per-scan alerts for the most recent vulnerable scans
+        const vulnScans = scans.filter(s => s.vulnerabilities_count > 0).slice(0, 3);
+        vulnScans.forEach(s => {
+          const sev = s.vulnerabilities_count > 100 ? 'critical' : s.vulnerabilities_count > 30 ? 'high' : 'medium';
+          alerts.push({ severity: sev, text: `Target <strong>${s.target}</strong> has <strong>${s.vulnerabilities_count}</strong> known CVEs. Last scanned ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'recently'}.` });
+        });
+
+        alertsPanel.innerHTML = alerts.map(a => `
+          <div class="alert-item">
+            <span class="alert-severity severity-${a.severity}">${a.severity}</span>
+            <span class="alert-text">${a.text}</span>
+          </div>
+        `).join('');
+      }
+
       function renderTable(scans) {
         if (scans.length === 0) {
-          scansTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No scans found. Start your first scan!</td></tr>';
+          scansTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">No scans found. Start your first scan!</td></tr>';
           return;
         }
 
@@ -272,10 +411,9 @@
         scansTableBody.innerHTML = recentScans.map(scan => `
           <tr>
             <td>${scan.target}</td>
-            <td>Passive Recon</td>
-            <td>nslookup, whois, theHarvester</td>
             <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
-            <td>${scan.created_at ? new Date(scan.created_at).toLocaleString() : 'N/A'}</td>
+            <td style="color: ${scan.vulnerabilities_count > 0 ? '#ff3b3b' : '#4caf50'}; font-weight: 700;">${scan.vulnerabilities_count || 0}</td>
+            <td>${scan.created_at ? new Date(scan.created_at).toLocaleDateString() : 'N/A'}</td>
             <td><button class="icon-btn" onclick="window.viewScanTerminal(${scan.id}, '${scan.status}', '${scan.target}')">👁</button></td>
           </tr>
         `).join('');

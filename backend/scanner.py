@@ -76,7 +76,10 @@ def parse_nslookup(output: str) -> dict:
         "mx_records": [],
         "ns_records": [],
         "txt_records": [],
-        "ip_addresses": []
+        "ip_addresses": [],
+        "names": [],
+        "servers": [],
+        "aliases": []
     }
     
     if not output:
@@ -114,6 +117,25 @@ def parse_nslookup(output: str) -> dict:
         match_txt = re.search(r'text\s*=\s*(.*)', line, re.IGNORECASE)
         if match_txt:
             parsed_data["txt_records"].append(match_txt.group(1).strip())
+            
+        # Reverse DNS / Name
+        match_name = re.search(r'name\s*=\s*(.*)', line, re.IGNORECASE)
+        if match_name:
+            parsed_data["names"].append(match_name.group(1).strip())
+        
+        match_name_field = re.search(r'^name:\s*(.*)', line, re.IGNORECASE)
+        if match_name_field:
+            parsed_data["names"].append(match_name_field.group(1).strip())
+            
+        # Server
+        match_server = re.search(r'^server:\s*(.*)', line, re.IGNORECASE)
+        if match_server:
+            parsed_data["servers"].append(match_server.group(1).strip())
+            
+        # Aliases
+        match_aliases = re.search(r'^aliases:\s*(.*)', line, re.IGNORECASE)
+        if match_aliases:
+            parsed_data["aliases"].append(match_aliases.group(1).strip())
             
         # Addresses: (plural) - handles multi-IP results elegantly
         if line.lower().startswith("addresses:"):
@@ -230,32 +252,48 @@ def parse_nmap(output: str) -> dict:
         return {"ports": ports}
         
     lines = output.split('\n')
+    current_port = None
+    
     for line in lines:
-        line = line.strip()
-        if not line or not line[0].isdigit():
+        stripped_line = line.strip()
+        if not stripped_line:
             continue
             
-        match = re.match(r'^(\d+/\w+)\s+(\w+)\s+([^\s]+)\s*(.*)', line)
-        if match:
+        # Match port line, e.g. "80/tcp open http Apache httpd 2.4.41"
+        match = re.match(r'^(\d+/\w+)\s+(\w+)\s+([^\s]+)\s*(.*)', stripped_line)
+        if match and line[0].isdigit():
             port_proto = match.group(1)
             state = match.group(2)
             service = match.group(3)
             version = match.group(4).strip()
             
-            ports.append({
+            current_port = {
                 "port": port_proto,
                 "state": state,
                 "service": service,
-                "version": version if version else "Unknown"
-            })
+                "version": version if version else "Unknown",
+                "vulnerabilities": []
+            }
+            ports.append(current_port)
+            continue
             
-    return {"ports": list(ports)}
+        # Capture script output for the last matched port
+        if current_port and (stripped_line.startswith('|') or stripped_line.startswith('_')):
+            clean_vuln = stripped_line.lstrip('|_').strip()
+            # Only keep lines that look like vulnerability data (filter out standard informational scripts)
+            if clean_vuln and any(keyword in clean_vuln.upper() for keyword in ['VULNERS', 'CVE-', 'CPE:/', '*EXPLOIT*', 'VULNERABLE']):
+                current_port["vulnerabilities"].append(clean_vuln)
+            
+    return {"ports": ports}
 
 
-async def background_passive_scan(scan_id: int, target: str):
+async def background_passive_scan(scan_id: int, target: str, scan_config: dict = None):
     """
     Executes passive scanning tools in the background, parses results, and outputs logs to memory for SSE.
     """
+    if scan_config is None:
+        scan_config = {"port_scan_mode": "fast", "enable_vuln_scripts": True, "scan_timeout": 300}
+    
     session = ACTIVE_SCANS.get(scan_id)
     if not session:
         return
@@ -269,6 +307,7 @@ async def background_passive_scan(scan_id: int, target: str):
             pass
         
     append_log(f"Initializing scan for target: {target}\n")
+    append_log(f"Config: Port Mode={scan_config['port_scan_mode']}, Vuln Scripts={'ON' if scan_config['enable_vuln_scripts'] else 'OFF'}, Timeout={scan_config['scan_timeout']}s\n")
     
     if not is_valid_target(target):
         append_log("[error] Target is invalid. Prevented potential command injection.\n")
@@ -335,14 +374,34 @@ async def background_passive_scan(scan_id: int, target: str):
         except Exception as e:
             append_log(f"[error] theHarvester failed: {repr(e)}\n")
 
-        # Tool 4: Nmap
+        # Tool 4: Nmap - Build command dynamically from settings
         append_log("Starting nmap port scan...\n")
         nmap_output = ""
         try:
-            # -sV: Service/Version detection, -F: Fast scan (top 100 ports)
-            async for is_line, content in run_command_and_stream_output(
-                ["nmap", "-sV", "-F", target], "nmap"
-            ):
+            nmap_cmd = ["nmap", "-sV", "-Pn"]
+            
+            # Port scan mode
+            port_mode = scan_config.get("port_scan_mode", "fast")
+            if port_mode == "fast":
+                nmap_cmd.append("-F")
+                append_log("[config] Port mode: Fast (top 100 ports)\n")
+            elif port_mode == "standard":
+                # Default nmap behavior (top 1000 ports), no extra flag needed
+                append_log("[config] Port mode: Standard (top 1000 ports)\n")
+            elif port_mode == "full":
+                nmap_cmd.append("-p-")
+                append_log("[config] Port mode: Full (all 65535 ports - this will take a while)\n")
+            
+            # Vulnerability scripts
+            if scan_config.get("enable_vuln_scripts", True):
+                nmap_cmd.extend(["--script", "vulners"])
+                append_log("[config] Vulnerability scripts: ENABLED\n")
+            else:
+                append_log("[config] Vulnerability scripts: DISABLED\n")
+            
+            nmap_cmd.append(target)
+            
+            async for is_line, content in run_command_and_stream_output(nmap_cmd, "nmap"):
                 if is_line:
                     append_log(content.replace("data: ", "") + "\n")
                 else:

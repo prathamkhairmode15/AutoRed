@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -15,7 +16,7 @@ import asyncio
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
-from database import init_db, get_db, User, Scan, ScanResult
+from database import init_db, get_db, User, Scan, ScanResult, UserSettings
 from scanner import ACTIVE_SCANS, ScanSession, background_passive_scan, stream_passive_scan
 
 app = FastAPI(title="AutoRed Scanning API")
@@ -84,6 +85,16 @@ class ScanStartRequest(BaseModel):
 
 @app.post("/api/scan/start")
 async def start_scan(request: ScanStartRequest, background_tasks: BackgroundTasks, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    # Read user scan settings
+    settings_result = await db.execute(select(UserSettings).where(UserSettings.user_id == current_user.id))
+    user_settings = settings_result.scalars().first()
+    
+    scan_config = {
+        "port_scan_mode": user_settings.port_scan_mode if user_settings else "fast",
+        "enable_vuln_scripts": (user_settings.enable_vuln_scripts if user_settings else "true") == "true",
+        "scan_timeout": user_settings.scan_timeout if user_settings else 300
+    }
+    
     # Create the scan record with 'running' status
     new_scan = Scan(user_id=current_user.id, target=request.target, status="running")
     db.add(new_scan)
@@ -92,7 +103,7 @@ async def start_scan(request: ScanStartRequest, background_tasks: BackgroundTask
     
     # Initialize memory buffer session and trigger standalone background scanning
     ACTIVE_SCANS[new_scan.id] = ScanSession()
-    background_tasks.add_task(background_passive_scan, new_scan.id, request.target)
+    background_tasks.add_task(background_passive_scan, new_scan.id, request.target, scan_config)
     
     return {"scan_id": new_scan.id, "target": new_scan.target, "status": new_scan.status}
 
@@ -114,7 +125,52 @@ async def stream_scan(scan_id: int, current_user: User = Depends(get_current_use
 async def get_scans(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Scan).where(Scan.user_id == current_user.id).order_by(Scan.created_at.desc()))
     scans = result.scalars().all()
-    return scans
+    
+    if not scans:
+        return {"scans": [], "stats": {"critical": 0, "high": 0, "medium": 0, "low": 0}}
+        
+    scan_ids = [scan.id for scan in scans]
+    nmap_results = await db.execute(
+        select(ScanResult).where(ScanResult.scan_id.in_(scan_ids), ScanResult.type == 'nmap')
+    )
+    nmap_rows = nmap_results.scalars().all()
+    
+    vuln_counts = {}
+    severity_totals = {"critical": 0, "high": 0, "medium": 0, "low": 0}
+    
+    for r in nmap_rows:
+        count = 0
+        if r.parsed_data and "ports" in r.parsed_data:
+            for port in r.parsed_data["ports"]:
+                vulns = port.get("vulnerabilities", [])
+                count += len(vulns)
+                for v in vulns:
+                    match = re.search(r'\s+(\d+\.\d+)\s+', v)
+                    if match:
+                        score = float(match.group(1))
+                        if score >= 9.0: severity_totals["critical"] += 1
+                        elif score >= 7.0: severity_totals["high"] += 1
+                        elif score >= 4.0: severity_totals["medium"] += 1
+                        else: severity_totals["low"] += 1
+                    else:
+                        severity_totals["low"] += 1
+                        
+        vuln_counts[r.scan_id] = vuln_counts.get(r.scan_id, 0) + count
+        
+    response_data = []
+    for scan in scans:
+        response_data.append({
+            "id": scan.id,
+            "target": scan.target,
+            "status": scan.status,
+            "created_at": scan.created_at,
+            "vulnerabilities_count": vuln_counts.get(scan.id, 0)
+        })
+        
+    return {
+        "scans": response_data,
+        "stats": severity_totals
+    }
 
 @app.get("/api/scan/{scan_id}")
 async def get_scan_details(scan_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -130,3 +186,91 @@ async def get_scan_details(scan_id: int, current_user: User = Depends(get_curren
         "scan": scan,
         "results": results
     }
+
+# ===== Settings Endpoints =====
+
+class SettingsUpdateRequest(BaseModel):
+    port_scan_mode: str = "fast"
+    enable_vuln_scripts: str = "true"
+    scan_timeout: int = 300
+    terminal_font_size: int = 14
+
+@app.get("/api/settings")
+async def get_settings(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(UserSettings).where(UserSettings.user_id == current_user.id))
+    settings = result.scalars().first()
+    
+    if not settings:
+        return {
+            "port_scan_mode": "fast",
+            "enable_vuln_scripts": "true",
+            "scan_timeout": 300,
+            "terminal_font_size": 14,
+            "email": current_user.email,
+            "user_id": current_user.id
+        }
+    
+    return {
+        "port_scan_mode": settings.port_scan_mode,
+        "enable_vuln_scripts": settings.enable_vuln_scripts,
+        "scan_timeout": settings.scan_timeout,
+        "terminal_font_size": settings.terminal_font_size,
+        "email": current_user.email,
+        "user_id": current_user.id
+    }
+
+@app.put("/api/settings")
+async def update_settings(request: SettingsUpdateRequest, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(UserSettings).where(UserSettings.user_id == current_user.id))
+    settings = result.scalars().first()
+    
+    if not settings:
+        settings = UserSettings(user_id=current_user.id)
+        db.add(settings)
+    
+    settings.port_scan_mode = request.port_scan_mode
+    settings.enable_vuln_scripts = request.enable_vuln_scripts
+    settings.scan_timeout = request.scan_timeout
+    settings.terminal_font_size = request.terminal_font_size
+    
+    await db.commit()
+    return {"message": "Settings saved successfully"}
+
+@app.delete("/api/scans/clear")
+async def clear_scan_history(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    # Get all user scan IDs
+    scan_result = await db.execute(select(Scan).where(Scan.user_id == current_user.id))
+    scans = scan_result.scalars().all()
+    
+    for scan in scans:
+        # Delete scan results first
+        results = await db.execute(select(ScanResult).where(ScanResult.scan_id == scan.id))
+        for r in results.scalars().all():
+            await db.delete(r)
+        await db.delete(scan)
+    
+    await db.commit()
+    return {"message": f"Cleared {len(scans)} scans and all associated data."}
+
+@app.get("/api/scans/export")
+async def export_scan_data(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    scan_result = await db.execute(select(Scan).where(Scan.user_id == current_user.id).order_by(Scan.created_at.desc()))
+    scans = scan_result.scalars().all()
+    
+    export_data = []
+    for scan in scans:
+        results_query = await db.execute(select(ScanResult).where(ScanResult.scan_id == scan.id))
+        results = results_query.scalars().all()
+        
+        export_data.append({
+            "id": scan.id,
+            "target": scan.target,
+            "status": scan.status,
+            "created_at": scan.created_at.isoformat() if scan.created_at else None,
+            "results": [{
+                "type": r.type,
+                "parsed_data": r.parsed_data
+            } for r in results]
+        })
+    
+    return {"export": export_data, "total_scans": len(export_data)}

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoRed | Settings</title>
+  <link rel="stylesheet" href="../dashboard/style.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  </script>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+      <div class="nav-logo pixel-font" style="font-size: 1.5rem;">AutoRed <span>APT</span></div>
+      <div class="nav-user">
+        <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
+        <span id="user-display" class="sub-pixel-font">Authenticating...</span>
+        <a href="../settings/index.html" class="icon-btn" title="Settings" style="text-decoration:none;">⚙</a>
+        <button id="logout-btn" class="logout-link" title="Logout"
+          style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: var(--text-secondary);">⏻</button>
+      </div>
+    </nav>
+
+    <div class="main-wrapper">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar">
+        <a href="../dashboard/index.html" class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-icon">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="sub-pixel-font">Dashboard</span>
+        </a>
+        <a href="../new-scan/index.html" class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <span class="sub-pixel-font">New Scan</span>
+        </a>
+        <a href="../scan-history/index.html" class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span class="sub-pixel-font">Scan History</span>
+        </a>
+        <a href="../reports/index.html" class="sidebar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-icon">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span class="sub-pixel-font">Reports</span>
+        </a>
+        <a href="#" class="sidebar-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-icon">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          <span class="sub-pixel-font">Settings</span>
+        </a>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="content-area">
+        <div class="dashboard-header">
+          <h2 class="pixel-font" style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--accent-color);">
+            System Configuration
+          </h2>
+          <p class="sub-pixel-font" style="margin-bottom: 2rem; color: var(--text-secondary)">
+            Customize your scanning parameters and preferences.
+          </p>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+
+          <!-- Scan Configuration -->
+          <section class="settings-card fade-in-up" style="animation-delay: 0.1s;">
+            <h3 class="settings-card-title pixel-font">
+              <span class="settings-icon"></span> Scan Configuration
+            </h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Port Scan Mode</label>
+                <p class="setting-desc">Controls how many ports Nmap scans per target.</p>
+              </div>
+              <select id="port-scan-mode" class="setting-select">
+                <option value="fast">Fast (Top 100)</option>
+                <option value="standard">Standard (Top 1000)</option>
+                <option value="full">Full (All 65,535)</option>
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Vulnerability Scripts</label>
+                <p class="setting-desc">Enable Nmap vulners script for CVE detection.</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="vuln-scripts-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Scan Timeout</label>
+                <p class="setting-desc">Maximum time (seconds) before a scan auto-cancels.</p>
+              </div>
+              <input type="number" id="scan-timeout" class="setting-input" value="300" min="60" max="3600">
+            </div>
+          </section>
+
+          <!-- Profile & Account -->
+          <section class="settings-card fade-in-up" style="animation-delay: 0.2s;">
+            <h3 class="settings-card-title pixel-font">
+              <span class="settings-icon"></span> Profile & Account
+            </h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Email Address</label>
+                <p class="setting-desc">Your authenticated identity.</p>
+              </div>
+              <span id="profile-email" class="setting-value">Loading...</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">User ID</label>
+                <p class="setting-desc">Internal database identifier.</p>
+              </div>
+              <span id="profile-uid" class="setting-value">—</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Total Scans Performed</label>
+                <p class="setting-desc">Lifetime scans executed on this account.</p>
+              </div>
+              <span id="profile-scans" class="setting-value">0</span>
+            </div>
+          </section>
+
+          <!-- Appearance -->
+          <section class="settings-card fade-in-up" style="animation-delay: 0.3s;">
+            <h3 class="settings-card-title pixel-font">
+              <span class="settings-icon"></span> Appearance
+            </h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Theme</label>
+                <p class="setting-desc">Switch between dark and light mode.</p>
+              </div>
+              <select id="theme-select" class="setting-select">
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Terminal Font Size</label>
+                <p class="setting-desc">Adjust the font size of scan terminal output.</p>
+              </div>
+              <input type="number" id="terminal-font-size" class="setting-input" value="14" min="10" max="24"
+                style="width: 80px;">
+            </div>
+          </section>
+
+          <!-- Data Management -->
+          <section class="settings-card fade-in-up" style="animation-delay: 0.4s;">
+            <h3 class="settings-card-title pixel-font">
+              <span class="settings-icon"></span> Data Management
+            </h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Export All Scan Data</label>
+                <p class="setting-desc">Download all your scan history as a JSON file.</p>
+              </div>
+              <button id="export-btn" class="setting-btn">Export JSON</button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Clear All Scan History</label>
+                <p class="setting-desc setting-desc-danger">Permanently delete all scans and results. This cannot be
+                  undone.</p>
+              </div>
+              <button id="clear-btn" class="setting-btn setting-btn-danger">Clear All Data</button>
+            </div>
+          </section>
+
+          <!-- About -->
+          <section class="settings-card fade-in-up" style="animation-delay: 0.5s;">
+            <h3 class="settings-card-title pixel-font">
+              <span class="settings-icon"></span> About AutoRed
+            </h3>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Version</label>
+              </div>
+              <span class="setting-value">1.0.0-beta</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Engine</label>
+              </div>
+              <span class="setting-value">Nmap + Vulners NSE</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Backend</label>
+              </div>
+              <span class="setting-value">FastAPI + SQLAlchemy</span>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Auth</label>
+              </div>
+              <span class="setting-value">Firebase Auth</span>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Save Button -->
+        <div class="save-bar fade-in-up" style="animation-delay: 0.6s;">
+          <span id="save-status" class="save-status"></span>
+          <button id="save-btn" class="btn-primary">Save All Settings</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>

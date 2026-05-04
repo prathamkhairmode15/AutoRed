@@ -35,6 +35,16 @@ class ScanResult(Base):
     raw_output = Column(Text, nullable=True)
     parsed_data = Column(JSON, nullable=True)
 
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    port_scan_mode = Column(String(20), default="fast")      # fast, standard, full
+    enable_vuln_scripts = Column(String(5), default="true")   # true / false
+    scan_timeout = Column(Integer, default=300)                # seconds
+    terminal_font_size = Column(Integer, default=14)           # px
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
