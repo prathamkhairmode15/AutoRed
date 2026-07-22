@@ -9,6 +9,11 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://root:@localhost:3306/autored")
 
+# Aiven adds ?ssl-mode=REQUIRED which aiomysql doesn't parse correctly. 
+# We need to replace it with ?ssl=true or remove it if using standard aiomysql defaults.
+if "ssl-mode=" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("ssl-mode=REQUIRED", "ssl=true")
+
 engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
