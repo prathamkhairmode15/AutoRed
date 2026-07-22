@@ -372,7 +372,9 @@ async def background_passive_scan(scan_id: int, target: str, scan_config: dict =
                 else:
                     nmap_exe = "nmap" # fallback to default string
                     
-            nmap_cmd = [nmap_exe, "-sV", "-Pn"]
+            # Run in unprivileged mode and use TCP connect scan (-sT) because 
+            # cloud platforms (like Render) don't allow raw sockets (CAP_NET_RAW).
+            nmap_cmd = [nmap_exe, "-sT", "-sV", "-Pn", "--unprivileged"]
             
             # Port scan mode
             port_mode = scan_config.get("port_scan_mode", "fast")
