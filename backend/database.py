@@ -4,17 +4,24 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.sql import func
 from dotenv import load_dotenv
+import ssl
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://root:@localhost:3306/autored")
 
 # Aiven adds ?ssl-mode=REQUIRED which aiomysql doesn't parse correctly. 
-# We need to replace it with ?ssl=true or remove it if using standard aiomysql defaults.
-if "ssl-mode=" in DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("ssl-mode=REQUIRED", "ssl=true")
+connect_args = {}
+if "ssl-mode=" in DATABASE_URL or "ssl=true" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("?ssl-mode=REQUIRED", "").replace("&ssl-mode=REQUIRED", "")
+    DATABASE_URL = DATABASE_URL.replace("?ssl=true", "").replace("&ssl=true", "")
+    
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    connect_args["ssl"] = ctx
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL, echo=True, connect_args=connect_args)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
