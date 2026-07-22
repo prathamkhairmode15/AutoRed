@@ -12,7 +12,7 @@ const terminalStatus = document.getElementById("terminal-status");
 const loader = document.getElementById("scan-loader");
 const resultsSection = document.getElementById("results-section");
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = window.API_BASE_URL;
 let currentUser = null;
 let idToken = null;
 

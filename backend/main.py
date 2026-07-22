@@ -31,13 +31,23 @@ app.add_middleware(
 )
 
 # Firebase initialization
-FIREBASE_CREDENTIALS = os.getenv("FIREBASE_CREDENTIALS", "serviceAccountKey.json")
-if os.path.exists(FIREBASE_CREDENTIALS):
-    cred = credentials.Certificate(FIREBASE_CREDENTIALS)
-    firebase_admin.initialize_app(cred)
-    print("Firebase admin initialized.")
+firebase_env_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+if firebase_env_json:
+    try:
+        cred_dict = json.loads(firebase_env_json)
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred)
+        print("Firebase admin initialized from environment variable.")
+    except Exception as e:
+        print(f"WARNING: Failed to parse FIREBASE_CREDENTIALS_JSON: {e}")
 else:
-    print(f"WARNING: Firebase credentials ({FIREBASE_CREDENTIALS}) not found. Authentication will fail.")
+    FIREBASE_CREDENTIALS = os.getenv("FIREBASE_CREDENTIALS", "serviceAccountKey.json")
+    if os.path.exists(FIREBASE_CREDENTIALS):
+        cred = credentials.Certificate(FIREBASE_CREDENTIALS)
+        firebase_admin.initialize_app(cred)
+        print("Firebase admin initialized from file.")
+    else:
+        print(f"WARNING: Firebase credentials ({FIREBASE_CREDENTIALS}) not found. Authentication will fail.")
 
 security = HTTPBearer()
 

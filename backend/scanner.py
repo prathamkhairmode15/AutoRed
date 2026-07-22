@@ -4,6 +4,8 @@ import re
 import threading
 import queue
 import subprocess
+import shutil
+import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import Scan, ScanResult, AsyncSessionLocal
 
@@ -30,7 +32,7 @@ async def run_command_and_stream_output(cmd_args, prefix=""):
     Run a subprocess in a background thread and stream its stdout via async queue.
     Yields tuple: (is_output_line, content)
     """
-    cmd_str = " ".join(cmd_args)
+    cmd_str = subprocess.list2cmdline(cmd_args)
     q = queue.Queue()
     
     def target_proc():
@@ -356,29 +358,21 @@ async def background_passive_scan(scan_id: int, target: str, scan_config: dict =
         except Exception as e:
             append_log(f"[error] whois failed: {repr(e)}\n")
 
-        # Tool 3: theHarvester
-        append_log("Starting theHarvester...\n")
-        theharvester_output = ""
-        try:
-            async for is_line, content in run_command_and_stream_output(
-                ["theHarvester", "-d", target, "-l", "200", "-b", "crtsh"], "theHarvester"
-            ):
-                if is_line:
-                    append_log(content.replace("data: ", "") + "\n")
-                else:
-                    theharvester_output = content
-                    
-            theharvester_parsed = parse_theharvester(theharvester_output)
-            db.add(ScanResult(scan_id=scan_id, type="theHarvester", raw_output=theharvester_output, parsed_data=theharvester_parsed))
-            await db.commit()
-        except Exception as e:
-            append_log(f"[error] theHarvester failed: {repr(e)}\n")
+        # Tool 3: theHarvester (Removed per user request)
 
         # Tool 4: Nmap - Build command dynamically from settings
         append_log("Starting nmap port scan...\n")
         nmap_output = ""
         try:
-            nmap_cmd = ["nmap", "-sV", "-Pn"]
+            nmap_exe = shutil.which("nmap")
+            if not nmap_exe:
+                fallback_path = r"C:\Program Files (x86)\Nmap\nmap.exe"
+                if os.path.exists(fallback_path):
+                    nmap_exe = fallback_path
+                else:
+                    nmap_exe = "nmap" # fallback to default string
+                    
+            nmap_cmd = [nmap_exe, "-sV", "-Pn"]
             
             # Port scan mode
             port_mode = scan_config.get("port_scan_mode", "fast")

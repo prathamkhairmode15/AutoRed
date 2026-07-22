@@ -1,6 +1,6 @@
 import { auth, onAuthStateChanged, signOut } from '../js/firebase.js';
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = window.API_BASE_URL;
 const userDisplay = document.getElementById("user-display");
 const logoutBtn = document.getElementById("logout-btn");
 const themeToggle = document.getElementById("theme-toggle");
