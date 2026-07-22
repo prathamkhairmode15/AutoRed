@@ -90,6 +90,11 @@ async def get_current_user(token_data: dict = Depends(verify_firebase_token), db
 async def on_startup():
     await init_db()
 
+@app.get("/")
+async def root_health_check():
+    """Health check endpoint used by Render and cron jobs to keep the server awake."""
+    return {"status": "ok", "message": "AutoRed API is running"}
+
 class ScanStartRequest(BaseModel):
     target: str
 
