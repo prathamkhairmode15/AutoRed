@@ -105,6 +105,12 @@ h3,
     min-width: 0; /* Fixes flex child overflow */
 }
 
+/* Fix flex/grid child overflow globally */
+.main-wrapper, .content-area, .analytics-grid > div, .analytics-panel, .stat-card, .activity-section, .settings-card {
+    min-width: 0;
+    max-width: 100%;
+}
+
 /* Navigation Items */
 .nav-logo {
     font-size: 1.2rem;
@@ -317,6 +323,7 @@ tr:hover td {
 .status-item span {
     color: var(--accent-color);
     font-weight: bold;
+    word-break: break-all;
 }
 
 .progress-container {
@@ -425,6 +432,7 @@ tr:hover td {
     
     .table-container {
         margin-bottom: 1.5rem;
+        width: 100%;
     }
     
     .action-panel {
@@ -433,6 +441,14 @@ tr:hover td {
     
     .dashboard-header h2 {
         font-size: 1.1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .analytics-panel {
+        padding: 1rem;
     }
 }
 
