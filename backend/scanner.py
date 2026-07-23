@@ -22,8 +22,8 @@ def is_valid_target(target: str) -> bool:
     # Match IP Address
     if re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', target):
         return True
-    # Match basic domain name format
-    if re.match(r'^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$', target):
+    # Match domain name format (including subdomains and hyphens)
+    if re.match(r'^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$', target):
         return True
     return False
 

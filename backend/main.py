@@ -100,6 +100,10 @@ class ScanStartRequest(BaseModel):
 
 @app.post("/api/scan/start")
 async def start_scan(request: ScanStartRequest, background_tasks: BackgroundTasks, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    target = request.target.strip()
+    target = re.sub(r'^https?://', '', target)
+    target = target.split('/')[0]
+
     # Read user scan settings
     settings_result = await db.execute(select(UserSettings).where(UserSettings.user_id == current_user.id))
     user_settings = settings_result.scalars().first()
@@ -111,14 +115,14 @@ async def start_scan(request: ScanStartRequest, background_tasks: BackgroundTask
     }
     
     # Create the scan record with 'running' status
-    new_scan = Scan(user_id=current_user.id, target=request.target, status="running")
+    new_scan = Scan(user_id=current_user.id, target=target, status="running")
     db.add(new_scan)
     await db.commit()
     await db.refresh(new_scan)
     
     # Initialize memory buffer session and trigger standalone background scanning
     ACTIVE_SCANS[new_scan.id] = ScanSession()
-    background_tasks.add_task(background_passive_scan, new_scan.id, request.target, scan_config)
+    background_tasks.add_task(background_passive_scan, new_scan.id, target, scan_config)
     
     return {"scan_id": new_scan.id, "target": new_scan.target, "status": new_scan.status}
 

@@ -52,7 +52,12 @@ function appendToTerminal(text) {
 }
 
 startScanBtn.addEventListener("click", async () => {
-  const target = targetInput.value.trim();
+  let target = targetInput.value.trim();
+  
+  // Clean URL to just get domain/IP
+  target = target.replace(/^https?:\/\//, '');
+  target = target.split('/')[0];
+  
   if (!target) {
     alert("Please enter a valid target.");
     return;

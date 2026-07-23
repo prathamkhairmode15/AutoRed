@@ -264,7 +264,7 @@ h3,
     border: 1px solid var(--border-color);
     box-shadow: var(--neon-box-shadow);
     border-radius: var(--border-radius);
-    overflow: hidden;
+    overflow-x: auto;
     margin-bottom: 2.5rem;
 }
 
@@ -387,6 +387,34 @@ tr:hover td {
 
     .nav-logo {
         font-size: 1rem;
+    }
+
+    .content-area {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-user {
+        gap: 0.5rem;
+    }
+    
+    .theme-toggle {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    
+    .nav-logo {
+        font-size: 0.8rem;
+    }
+    
+    .sidebar {
+        width: 50px;
+    }
+    
+    .btn-primary {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -621,7 +649,6 @@ tr:hover td {
   font-family: 'IBM Plex Mono', monospace;
 }
 
-/* Responsive: Stack analytics grid */
 @media (max-width: 1100px) {
   .analytics-grid {
     grid-template-columns: 1fr;
@@ -631,5 +658,11 @@ tr:hover td {
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 }
