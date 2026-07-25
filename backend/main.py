@@ -91,9 +91,14 @@ async def on_startup():
     await init_db()
 
 @app.get("/")
-async def root_health_check():
-    """Health check endpoint used by Render and cron jobs to keep the server awake."""
-    return {"status": "ok", "message": "AutoRed API is running"}
+async def root_health_check(db: AsyncSession = Depends(get_db)):
+    """Health check endpoint used by Render and cron jobs to keep the server and DB awake."""
+    try:
+        # Ping the database to keep Aiven awake
+        await db.execute(select(1))
+        return {"status": "ok", "message": "AutoRed API and Database are running"}
+    except Exception as e:
+        return {"status": "error", "message": f"Database connection failed: {str(e)}"}
 
 class ScanStartRequest(BaseModel):
     target: str
