@@ -279,6 +279,8 @@ async function generatePDF(scanId, target) {
                         let isHeader = false;
                         let textToPrint = line;
                         
+                        let cleanLine = line.replace(/^-\s*/, '').replace(/\*\*/g, '').trim();
+                        
                         // Check for CVE header
                         if (line.includes('**CVE-') || line.match(/^CVE-\d{4}-\d+/)) {
                             doc.setFont("helvetica", "bold");
@@ -287,8 +289,8 @@ async function generatePDF(scanId, target) {
                             isHeader = true;
                         } 
                         // Check for Keywords
-                        else if (line.startsWith('Mechanism:') || line.startsWith('Impact:') || line.startsWith('Remediation:')) {
-                            const parts = line.split(':');
+                        else if (cleanLine.startsWith('Mechanism:') || cleanLine.startsWith('Impact:') || cleanLine.startsWith('Remediation:')) {
+                            const parts = cleanLine.split(':');
                             const keyword = parts[0] + ':';
                             const restOfText = parts.slice(1).join(':').trim();
                             
