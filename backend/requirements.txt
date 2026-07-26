@@ -7,3 +7,4 @@ aiomysql
 pymysql
 pydantic
 python-dotenv
+httpx

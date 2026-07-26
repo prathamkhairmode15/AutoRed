@@ -261,6 +261,70 @@ async function generatePDF(scanId, target) {
                         });
                     }
                 }
+                else if (r.type === 'ai_explanation') {
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(0, 0, 0);
+                    doc.text("AI Vulnerability Analysis:", 25, yPos); yPos += 6; checkPageBreak();
+                    
+                    const explanationText = r.raw_output || "No AI analysis available.";
+                    
+                    const lines = explanationText.split('\n');
+                    lines.forEach(line => {
+                        line = line.trim();
+                        if (!line) {
+                            yPos += 2; // Much smaller gap for empty lines (closer lines)
+                            return;
+                        }
+                        
+                        let isHeader = false;
+                        let textToPrint = line;
+                        
+                        // Check for CVE header
+                        if (line.includes('**CVE-') || line.match(/^CVE-\d{4}-\d+/)) {
+                            doc.setFont("helvetica", "bold");
+                            doc.setTextColor(255, 59, 59); // AutoRed Accent Color (Red)
+                            textToPrint = line.replace(/\*\*/g, '');
+                            isHeader = true;
+                        } 
+                        // Check for Keywords
+                        else if (line.startsWith('Mechanism:') || line.startsWith('Impact:') || line.startsWith('Remediation:')) {
+                            const parts = line.split(':');
+                            const keyword = parts[0] + ':';
+                            const restOfText = parts.slice(1).join(':').trim();
+                            
+                            // Print keyword in bold black
+                            doc.setFont("helvetica", "bold");
+                            doc.setTextColor(0, 0, 0);
+                            doc.text(keyword, 25, yPos);
+                            
+                            // Calculate width to print the rest of the text on the same line
+                            const keywordWidth = doc.getTextWidth(keyword) + 2;
+                            doc.setFont("helvetica", "normal");
+                            doc.setTextColor(80, 80, 80);
+                            
+                            const splitText = doc.splitTextToSize(restOfText, 160 - keywordWidth);
+                            checkPageBreak(splitText.length * 5);
+                            doc.text(splitText, 25 + keywordWidth, yPos);
+                            yPos += (5 * splitText.length) + 1; // +1 slight padding
+                            return; 
+                        }
+                        else {
+                            doc.setFont("helvetica", "normal");
+                            doc.setTextColor(80, 80, 80);
+                            textToPrint = line.replace(/\*\*/g, ''); // strip stray bold tags
+                        }
+
+                        // Normal printing for plain text and headers
+                        const splitText = doc.splitTextToSize(textToPrint, 160);
+                        checkPageBreak(splitText.length * 5);
+                        doc.text(splitText, 25, yPos);
+                        yPos += (5 * splitText.length) + 1;
+                        
+                        if (isHeader) {
+                            yPos += 1;
+                        }
+                    });
+                }
 
                 yPos += 10;
                 checkPageBreak();

@@ -119,7 +119,7 @@ async function openModal(scanId, target) {
             const d = r.parsed_data || {};
             html += `<div class="data-section">
                 <div class="data-title">[SOURCE] ${r.type.toUpperCase()}</div>
-                <div class="data-content">${formatToolData(r.type, d)}</div>
+                <div class="data-content">${formatToolData(r.type, d, r.raw_output)}</div>
             </div>`;
         });
         
@@ -129,7 +129,7 @@ async function openModal(scanId, target) {
     }
 }
 
-function formatToolData(type, d) {
+function formatToolData(type, d, raw_output = '') {
     let out = '';
 
     if (type === 'nslookup') {
@@ -190,6 +190,11 @@ function formatToolData(type, d) {
                 }
             });
         }
+    }
+    else if (type === 'ai_explanation') {
+        out += `<span style="color:#00e5ff;">✦ AI Vulnerability Analysis</span>\n`;
+        out += `<span style="color:#555;">${'─'.repeat(50)}</span>\n`;
+        out += `<div style="white-space: pre-wrap; font-family: monospace; line-height: 1.5; margin-top: 10px; color: #ccc;">${escHtml(raw_output)}</div>\n`;
     }
     else {
         // Fallback for unknown tool types

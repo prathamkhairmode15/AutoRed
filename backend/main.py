@@ -18,6 +18,7 @@ if sys.platform == 'win32':
 
 from database import init_db, get_db, User, Scan, ScanResult, UserSettings
 from scanner import ACTIVE_SCANS, ScanSession, background_passive_scan, stream_passive_scan
+from ai_engine import stream_chat_response
 
 app = FastAPI(title="AutoRed Scanning API")
 
@@ -298,3 +299,10 @@ async def export_scan_data(current_user: User = Depends(get_current_user), db: A
         })
     
     return {"export": export_data, "total_scans": len(export_data)}
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+async def chat_endpoint(request: ChatRequest, current_user: User = Depends(get_current_user)):
+    return StreamingResponse(stream_chat_response(request.message), media_type="text/plain")
