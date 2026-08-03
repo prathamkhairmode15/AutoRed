@@ -175,9 +175,17 @@ async function fetchAndDisplayResults(scanId, token) {
   resetCard("res-emails");
   resetCard("res-subdomains");
   resetCard("res-ports");
+  resetCard("res-ai");
 
   results.forEach(r => {
     const parsed = r.parsed_data;
+    
+    // AI Explanation doesn't need parsed data object check if raw_output exists
+    if (r.type === 'ai_explanation' && r.raw_output) {
+      document.getElementById("res-ai").innerHTML = r.raw_output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return;
+    }
+
     if (!parsed) return;
 
     if (r.type === 'nslookup') {
@@ -252,6 +260,7 @@ async function fetchAndDisplayResults(scanId, token) {
   checkAndHide("res-emails");
   checkAndHide("res-subdomains");
   checkAndHide("res-ports");
+  checkAndHide("res-ai");
 
   resultsSection.classList.remove("hidden");
 }

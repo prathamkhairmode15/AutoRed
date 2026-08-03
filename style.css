@@ -4,7 +4,7 @@
 
 :root {
   --bg-color: #0a0a0a;
-  --accent: #ff0404;
+  --accent: #ffffff;
   --text-main: #ffffff;
   --text-secondary: #cfcfcf;
   --nav-bg-transparent: rgba(10, 10, 10, 0);
@@ -20,7 +20,7 @@
 
 [data-theme="light"] {
   --bg-color: #f5f5f5;
-  --accent: #e60000;
+  --accent: #000000;
   --text-main: #1a1a1a;
   --text-secondary: #444444;
   --nav-bg-transparent: rgba(245, 245, 245, 0);
@@ -90,7 +90,7 @@ nav {
 nav.scrolled {
   background-color: var(--nav-bg-solid);
   padding: 15px 40px;
-  border-bottom: 1px solid rgba(255, 26, 26, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logo {
@@ -118,7 +118,7 @@ nav.scrolled {
 
 .btn-login:hover {
   background-color: var(--accent);
-  color: white;
+  color: var(--bg-color);
 }
 
 /* ── Container ── */
@@ -201,8 +201,8 @@ section {
 
 .highlight-badge {
   padding: 8px 16px;
-  background: rgba(255, 4, 4, 0.1);
-  border: 1px solid rgba(255, 4, 4, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: var(--text-main);
   font-family: var(--font-main);
   font-size: 0.85rem;
@@ -214,7 +214,7 @@ section {
 #globeViz {
   cursor: grab;
   border-radius: 50%;
-  box-shadow: 0 0 30px rgba(255, 4, 4, 0.15);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
   background: transparent;
   display: flex;
   justify-content: center;
@@ -275,7 +275,7 @@ section {
 .solution-card {
   padding: 40px;
   background: var(--card-bg);
-  border: 1px solid rgba(255, 26, 26, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all var(--transition);
 }
 
@@ -408,7 +408,7 @@ section {
 
 /* ── Ethical Section ── */
 .ethical-box {
-  background: rgba(255, 4, 4, 0.05);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--accent);
   padding: 50px;
   text-align: center;
@@ -443,7 +443,7 @@ section {
 
 .theme-toggle-btn:hover {
   background: var(--accent);
-  color: white;
+  color: var(--bg-color);
 }
 
 .step-num {
@@ -459,7 +459,7 @@ section {
 footer {
   padding: 60px 0;
   background: #000;
-  border-top: 1px solid rgba(255, 26, 26, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 

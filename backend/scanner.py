@@ -408,29 +408,33 @@ async def background_passive_scan(scan_id: int, target: str, scan_config: dict =
             db.add(ScanResult(scan_id=scan_id, type="nmap", raw_output=nmap_output, parsed_data=nmap_parsed))
             await db.commit()
             
-            # AI VULNERABILITY EXPLANATION
+            # AI COMPREHENSIVE EXPLANATION
             append_log(f"[AI Debug] Starting AI block. Vulnerability scripts enabled: {scan_config.get('enable_vuln_scripts', True)}\n")
+            
+            unique_cves = set()
             if scan_config.get("enable_vuln_scripts", True):
-                unique_cves = set()
                 for port_data in nmap_parsed.get("ports", []):
                     for vuln_line in port_data.get("vulnerabilities", []):
                         # Find CVEs like CVE-2023-12345
                         cve_matches = re.findall(r'(CVE-\d{4}-\d+)', vuln_line, re.IGNORECASE)
                         for match in cve_matches:
                             unique_cves.add(match.upper())
-                
-                cve_list = list(unique_cves)
-                if cve_list:
-                    append_log(f"\n[AI] Found {len(cve_list)} vulnerabilities. Generating explanations with Llama 3:8b...\n")
-                    try:
-                        ai_explanation = await ai_engine.generate_cve_explanation(cve_list)
-                        db.add(ScanResult(scan_id=scan_id, type="ai_explanation", raw_output=ai_explanation, parsed_data={"cves": cve_list}))
-                        await db.commit()
-                        append_log("[AI] Explanations generated and saved successfully.\n")
-                    except Exception as ai_e:
-                        append_log(f"[error] AI Engine failed: {repr(ai_e)}\n")
-                else:
-                    append_log("[AI] No specific CVEs found to analyze.\n")
+            
+            cve_list = list(unique_cves)
+            scan_data = {
+                "nslookup": nslookup_parsed,
+                "whois": whois_parsed,
+                "nmap_ports": nmap_parsed.get("ports", [])
+            }
+
+            append_log(f"\n[AI] Generating comprehensive scan explanation (WHOIS, DNS, Ports, CVEs)...\n")
+            try:
+                ai_explanation = await ai_engine.generate_scan_explanation(scan_data, cve_list)
+                db.add(ScanResult(scan_id=scan_id, type="ai_explanation", raw_output=ai_explanation, parsed_data={"cves": cve_list, "comprehensive": True}))
+                await db.commit()
+                append_log("[AI] Explanations generated and saved successfully.\n")
+            except Exception as ai_e:
+                append_log(f"[error] AI Engine failed: {repr(ai_e)}\n")
 
         except Exception as e:
             append_log(f"[error] nmap failed: {repr(e)}\n")

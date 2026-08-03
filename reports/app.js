@@ -58,7 +58,7 @@ async function fetchReports() {
         renderReports(allCompletedScans);
 
     } catch (err) {
-        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff3b3b;">${err.message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ffffff;">${err.message}</td></tr>`;
     }
 }
 
@@ -114,7 +114,7 @@ async function generatePDF(scanId, target) {
 
         // Title styling
         doc.setFontSize(22);
-        doc.setTextColor(255, 59, 59); // AutoRed Accent Color
+        doc.setTextColor(255, 255, 255); // AutoRed Accent Color
         doc.text("AutoRed APT Intelligence", 105, yPos, { align: "center" });
         
         yPos += 15;
@@ -284,7 +284,7 @@ async function generatePDF(scanId, target) {
                         // Check for CVE header
                         if (line.includes('**CVE-') || line.match(/^CVE-\d{4}-\d+/)) {
                             doc.setFont("helvetica", "bold");
-                            doc.setTextColor(255, 59, 59); // AutoRed Accent Color (Red)
+                            doc.setTextColor(255, 255, 255); // AutoRed Accent Color (Red)
                             textToPrint = line.replace(/\*\*/g, '');
                             isHeader = true;
                         } 

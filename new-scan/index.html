@@ -18,7 +18,7 @@
     <div class="app-container">
       <!-- Top Navigation Bar -->
       <nav class="top-navbar">
-        <div class="nav-logo pixel-font" style="font-size: 1.5rem;">AutoRed <span>APT</span></div>
+        <div class="nav-logo pixel-font" style="font-size: 1.5rem; cursor: pointer;" onclick="window.location.href='../dashboard/index.html'">Auto<span style="color: #ff0404;">Red</span> <span>APT</span></div>
         <div class="nav-user">
           <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
           <span id="user-display" class="sub-pixel-font">Authenticating...</span>
@@ -124,6 +124,10 @@
               <div class="result-card">
                 <div class="result-title sub-pixel-font">Open Ports (nmap)</div>
                 <ul id="res-ports" class="res-list"></ul>
+              </div>
+              <div class="result-card" style="grid-column: 1 / -1;">
+                <div class="result-title sub-pixel-font" style="color: #00e5ff;">✦ AI Vulnerability Analysis</div>
+                <div id="res-ai" class="res-data" style="white-space: pre-wrap; font-family: monospace; line-height: 1.5; color: #ccc;"></div>
               </div>
             </div>
           </section>

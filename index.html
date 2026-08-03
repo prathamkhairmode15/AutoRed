@@ -16,7 +16,7 @@
 <body>
   <!-- Navbar -->
   <nav id="navbar">
-    <div class="logo">AutoRed <span>APT</span></div>
+    <div class="logo" onclick="window.location.href='dashboard/index.html'" style="cursor: pointer;">Auto<span style="color: #ff0404;">Red</span> <span>APT</span></div>
     <div class="nav-right">
       <button id="theme-toggle" class="theme-toggle-btn">THEME: DARK</button>
       <a href="login/index.html" class="btn-login">LOGIN</a>
@@ -28,8 +28,8 @@
     <div class="container hero-container">
       <div class="hero-left">
         <h2>Autonomous Penetration Testing Platform</h2>
-        <h1>AutoRed <span>APT</span></h1>
-        <p>AutoRed <span>APT</span> is a unified penetration testing platform designed to automate security
+        <h1>Auto<span style="color: #ff0404;">Red</span> <span>APT</span></h1>
+        <p>Auto<span style="color: #ff0404;">Red</span> <span>APT</span> is a unified penetration testing platform designed to automate security
           assessments across network and web environments. The platform integrates multiple security tools into a
           single workflow, enabling faster vulnerability detection, reduced false positives, and improved security
           analysis.</p>
@@ -86,7 +86,7 @@
   <section class="solution" id="solution">
     <div class="container">
       <h2 class="section-title">The AutoRed Approach</h2>
-      <p class="section-intro">AutoRed <span>APT</span> addresses these challenges by providing a unified and
+      <p class="section-intro">Auto<span style="color: #ff0404;">Red</span> <span>APT</span> addresses these challenges by providing a unified and
         automated penetration testing environment. The platform integrates multiple security testing tools into
         a single interface and automates the scanning and analysis process.</p>
       <div class="solution-grid">
@@ -111,7 +111,7 @@
   <section class="capabilities" id="capabilities">
     <div class="container">
       <h2 class="section-title">Core Capabilities</h2>
-      <p class="section-intro">AutoRed <span>APT</span> provides several key capabilities designed to streamline
+      <p class="section-intro">Auto<span style="color: #ff0404;">Red</span> <span>APT</span> provides several key capabilities designed to streamline
         penetration testing and vulnerability analysis.</p>
       <div class="capabilities-grid">
         <div class="capability-card">
@@ -216,7 +216,7 @@
   <section class="users" id="users">
     <div class="container">
       <h2 class="section-title">Who Can Use AutoRed</h2>
-      <p class="section-intro">AutoRed <span>APT</span> is designed for individuals and organizations involved in
+      <p class="section-intro">Auto<span style="color: #ff0404;">Red</span> <span>APT</span> is designed for individuals and organizations involved in
         cybersecurity research and security testing.</p>
       <div class="users-container">
         <div class="user-tag">Cybersecurity Researchers</div>
@@ -232,7 +232,7 @@
     <div class="container">
       <h2 class="section-title">Responsible Security Testing</h2>
       <div class="ethical-box">
-        <p>AutoRed <span>APT</span> is designed for ethical security testing and cybersecurity research. The
+        <p>Auto<span style="color: #ff0404;">Red</span> <span>APT</span> is designed for ethical security testing and cybersecurity research. The
           platform should only be used on systems where proper authorization has been obtained.</p>
         <p class="ethical-supporting">Responsible disclosure and ethical hacking principles are essential for
           maintaining a secure digital environment.</p>
@@ -244,7 +244,7 @@
   <footer>
     <div class="container">
       <div class="footer-content">
-        <p>&copy; 2026 AutoRed <span>APT</span></p>
+        <p>&copy; 2026 Auto<span style="color: #ff0404;">Red</span> <span>APT</span></p>
         <p>Ethical Security Testing Platform</p>
       </div>
     </div>
@@ -318,9 +318,9 @@
         // 🎯 Background
         .backgroundColor('rgba(0,0,0,0)')
 
-        // 🔥 Atmosphere (neon red glow)
+        // 🔥 Atmosphere (neon glow)
         .showAtmosphere(true)
-        .atmosphereColor('#ff0404')
+        .atmosphereColor('#ffffff')
         .atmosphereAltitude(0.2)
 
         // 🌐 Grid (cyber style)
@@ -334,7 +334,7 @@
         .labelText('text')
         .labelSize(2)
         .labelDotRadius(0.6)
-        .labelColor(() => 'rgba(255, 50, 50, 0.9)')
+        .labelColor(() => 'rgba(255, 255, 255, 0.9)')
         .labelResolution(2)
 
         // 📐 Size
@@ -349,7 +349,7 @@
 
 
       // 💡 Lighting (gives depth and premium look)
-      const directionalLight = new THREE.DirectionalLight(0xff0000, 0.6);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
       directionalLight.position.set(1, 1, 1);
       myGlobe.scene().add(directionalLight);
 

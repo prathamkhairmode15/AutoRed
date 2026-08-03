@@ -71,7 +71,7 @@
 }
 
 .setting-desc-danger {
-  color: #ff3b3b;
+  color: #ffffff;
   opacity: 0.8;
 }
 
@@ -100,7 +100,7 @@
 .setting-select:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 5px rgba(255, 59, 59, 0.2);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
 .setting-select option {
@@ -124,7 +124,7 @@
 .setting-input:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 5px rgba(255, 59, 59, 0.2);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
 /* Toggle Switch */
@@ -164,7 +164,7 @@
 }
 
 input:checked + .toggle-slider {
-  background-color: rgba(255, 4, 4, 0.3);
+  background-color: rgba(255, 255, 255, 0.3);
   border: 1px solid var(--accent-color);
 }
 
@@ -192,7 +192,7 @@ input:checked + .toggle-slider:before {
 
 .setting-btn:hover {
   background: var(--accent-color);
-  color: white;
+  color: var(--bg-color);
   box-shadow: 0 0 15px var(--accent-glow);
   transform: translateY(-1px);
 }
@@ -204,15 +204,15 @@ input:checked + .toggle-slider:before {
 }
 
 .setting-btn-danger {
-  border-color: #ff3b3b;
-  color: #ff3b3b;
-  background: rgba(255, 59, 59, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .setting-btn-danger:hover {
-  background: #ff3b3b;
-  color: white;
-  box-shadow: 0 0 15px rgba(255, 59, 59, 0.4);
+  background: #ffffff;
+  color: var(--bg-color);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
 /* Save Bar */
@@ -236,7 +236,7 @@ input:checked + .toggle-slider:before {
 }
 
 .save-status.error {
-  color: #ff3b3b;
+  color: #ffffff;
 }
 
 /* Light theme overrides */

@@ -17,7 +17,7 @@
     <div class="app-container">
       <!-- Top Navigation Bar -->
       <nav class="top-navbar">
-        <div class="nav-logo pixel-font" style="font-size: 1.5rem;">AutoRed <span>APT</span></div>
+        <div class="nav-logo pixel-font" style="font-size: 1.5rem; cursor: pointer;" onclick="window.location.href='index.html'">Auto<span style="color: #ff0404;">Red</span> <span>APT</span></div>
         <div class="nav-user">
           <button id="theme-toggle" class="theme-toggle">THEME: DARK</button>
           <span id="user-display" class="sub-pixel-font">Authenticating...</span>
@@ -155,7 +155,7 @@
                   <canvas id="severity-chart"></canvas>
                 </div>
                 <div class="severity-legend" id="severity-legend">
-                  <div class="legend-item"><span class="legend-dot" style="background:#ff3b3b;"></span> Critical <span class="legend-count" id="legend-critical">0</span></div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#ffffff;"></span> Critical <span class="legend-count" id="legend-critical">0</span></div>
                   <div class="legend-item"><span class="legend-dot" style="background:#ffa500;"></span> High <span class="legend-count" id="legend-high">0</span></div>
                   <div class="legend-item"><span class="legend-dot" style="background:#ffd700;"></span> Medium <span class="legend-count" id="legend-medium">0</span></div>
                   <div class="legend-item"><span class="legend-dot" style="background:#4caf50;"></span> Low <span class="legend-count" id="legend-low">0</span></div>
@@ -417,8 +417,8 @@
         scansTableBody.innerHTML = recentScans.map(scan => `
           <tr>
             <td>${scan.target}</td>
-            <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
-            <td style="color: ${scan.vulnerabilities_count > 0 ? '#ff3b3b' : '#4caf50'}; font-weight: 700;">${scan.vulnerabilities_count || 0}</td>
+            <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ffffff' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
+            <td style="color: ${scan.vulnerabilities_count > 0 ? '#ffffff' : '#666666'}; font-weight: 700;">${scan.vulnerabilities_count || 0}</td>
             <td>${scan.created_at ? new Date(scan.created_at).toLocaleDateString() : 'N/A'}</td>
             <td><button class="icon-btn" onclick="window.viewScanTerminal(${scan.id}, '${scan.status}', '${scan.target}')">👁</button></td>
           </tr>

@@ -59,7 +59,7 @@ async function fetchHistory() {
         renderHistory(allScans);
 
     } catch (err) {
-        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ff3b3b;">${err.message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ffffff;">${err.message}</td></tr>`;
     }
 }
 
@@ -72,7 +72,7 @@ function renderHistory(scans) {
     tableBody.innerHTML = scans.map(scan => `
         <tr>
           <td>${scan.target}</td>
-          <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ff3b3b' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
+          <td style="color: ${scan.status === 'completed' ? 'var(--accent-color)' : scan.status === 'failed' ? '#ffffff' : '#ffcc00'}">${scan.status.toUpperCase()}</td>
           <td>${scan.created_at ? new Date(scan.created_at).toLocaleString() : 'N/A'}</td>
           <td>
             <button class="btn-primary" style="padding: 0.3rem 0.8rem; font-size: 0.7rem;" data-id="${scan.id}" data-target="${scan.target}">View Report</button>
@@ -110,7 +110,7 @@ async function openModal(scanId, target) {
         
         const results = data.results;
         if (!results || results.length === 0) {
-            modalBody.innerHTML = '<p style="text-align:center; color: #ff3b3b;">No parsed data found for this scan.</p>';
+            modalBody.innerHTML = '<p style="text-align:center; color: #ffffff;">No parsed data found for this scan.</p>';
             return;
         }
 
@@ -125,7 +125,7 @@ async function openModal(scanId, target) {
         
         modalBody.innerHTML = html;
     } catch (err) {
-        modalBody.innerHTML = `<p style="text-align:center; color: #ff3b3b;">Error: ${err.message}</p>`;
+        modalBody.innerHTML = `<p style="text-align:center; color: #ffffff;">Error: ${err.message}</p>`;
     }
 }
 

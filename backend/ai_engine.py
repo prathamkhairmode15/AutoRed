@@ -19,39 +19,45 @@ async def fetch_cve_description(cve_id: str, client: httpx.AsyncClient) -> str:
         logging.warning(f"Could not fetch description for {cve_id}: {e}")
     return "Description not available."
 
-async def generate_cve_explanation(cve_ids: list[str], model: str = DEFAULT_MODEL) -> str:
+async def generate_scan_explanation(scan_data: dict, cve_ids: list[str], model: str = DEFAULT_MODEL) -> str:
     """
-    Sends a list of CVE IDs to a local Ollama instance to generate an explanation.
+    Sends scan data and CVE IDs to an AI to generate a comprehensive explanation.
     """
-    if not cve_ids:
-        return "No CVEs provided."
-
-    # Limit to top 5 CVEs to prevent overwhelming the local model and timing out
+    notice = ""
+    # Limit to top 5 CVEs to prevent overwhelming
     if len(cve_ids) > 5:
         cve_ids = cve_ids[:5]
         notice = "\n\n*(Note: Showing explanations for the first 5 CVEs only to preserve system resources.)*"
-    else:
-        notice = ""
 
     # FETCH CVE DESCRIPTIONS CONCURRENTLY
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        fetch_tasks = [fetch_cve_description(cve, client) for cve in cve_ids]
-        descriptions = await asyncio.gather(*fetch_tasks)
-        
     cve_contexts = []
-    for cve, desc in zip(cve_ids, descriptions):
-        cve_contexts.append(f"- {cve}: {desc}")
+    if cve_ids:
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            fetch_tasks = [fetch_cve_description(cve, client) for cve in cve_ids]
+            descriptions = await asyncio.gather(*fetch_tasks)
+            
+        for cve, desc in zip(cve_ids, descriptions):
+            cve_contexts.append(f"- {cve}: {desc}")
+    
     context_str = "\n".join(cve_contexts)
+    scan_json = json.dumps(scan_data, indent=2)
 
     prompt = (
-        f"You are a strict and factual cybersecurity expert. Your task is to explain the following Common Vulnerabilities and Exposures (CVEs).\n\n"
-        f"OFFICIAL DESCRIPTIONS (RAG Context):\n{context_str}\n\n"
-        f"RULES:\n"
-        f"1. Rely ONLY on the official descriptions provided above. Do NOT invent or guess any information.\n"
-        f"2. Do NOT invent release dates or version numbers that are not in the provided text.\n"
-        f"3. For each CVE, briefly describe the factual mechanism, the potential impact, and standard remediation.\n"
-        f"Keep the explanation professional, highly accurate, and concise."
+        f"You are a strict and factual cybersecurity expert. Your task is to analyze and explain the results of a network scan.\n\n"
+        f"SCAN DATA (JSON):\n{scan_json}\n\n"
     )
+    if context_str:
+        prompt += f"OFFICIAL CVE DESCRIPTIONS (RAG Context):\n{context_str}\n\n"
+
+    prompt += (
+        f"RULES:\n"
+        f"1. Explain the WHOIS and NSLOOKUP findings briefly.\n"
+        f"2. Explain the NMAP open ports: What is the standard use case for each open port, and why might it be open? What are the potential security risks?\n"
+    )
+    if context_str:
+        prompt += f"3. Briefly describe the factual mechanism, potential impact, and standard remediation for each CVE found based ONLY on the official descriptions provided. Do NOT invent information.\n"
+        
+    prompt += f"Keep the explanation professional, highly accurate, and concise. Format using Markdown."
 
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     if not GROQ_API_KEY:
@@ -86,6 +92,7 @@ async def generate_cve_explanation(cve_ids: list[str], model: str = DEFAULT_MODE
     except Exception as e:
         logging.error(f"Unexpected error in AI engine: {e}")
         return f"Unexpected error: {str(e)}"
+
 
 async def stream_chat_response(prompt: str, model: str = DEFAULT_MODEL):
     """
